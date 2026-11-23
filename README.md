@@ -194,7 +194,7 @@ All three licences are on the list accepted by the Digital Public Goods Alliance
 | Kadyrova Nazerke | Human rights, ethics and accessibility lead | 4, 5, 8 |
 | Tuleyeva Aizhan | Data, AI, DPG Standard and critical analysis lead | 10, 11, 12, 14 |
 
-Tutor: A. T. Kusmanova. Replace “N. Surname” with the team members’ names.
+Tutor: M. G. Gerassimov. 
 
 **AI use (course Level C, AI-assisted).** The team used the generative AI assistant Claude (Anthropic) to draft
 text, generate and debug the prototype code and diagrams, and check formatting. The concept, the design twist and
