@@ -9,6 +9,6 @@
     "test": "npm run lint:html"
   },
   "devDependencies": {
-    "html-validate": "^9.0.0"
+    "html-validate": "^11.21.1"
   }
 }
