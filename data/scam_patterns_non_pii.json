@@ -1,0 +1,143 @@
+{
+  "name": "Qalqan-60+ open scam-script taxonomy (non-PII)",
+  "version": "1.0.0",
+  "updated": "2026-11",
+  "license": "ODC-By-1.0",
+  "license_url": "https://opendatacommons.org/licenses/by/1-0/",
+  "attribution": "Qalqan-60+ contributors",
+  "languages": ["kk", "ru", "en"],
+  "pii_statement": "Contains no personal data. Phrases are generic paraphrases of scam scripts described in public awareness materials and media reports. No names, phone numbers, card or account numbers, links, locations or victim stories are included.",
+  "fields": {
+    "categories.id": "Stable identifier of the threat type",
+    "categories.name": "Short name of the threat type in kk / ru / en",
+    "categories.safe_response": "Plain-language advice for an older adult in kk / ru / en",
+    "patterns.id": "Stable identifier of the script pattern (QP-nnn)",
+    "patterns.category": "Threat type, refers to categories.id",
+    "patterns.channel": "How the script reaches the person",
+    "patterns.asks_for": "What the scammer wants the person to do or reveal",
+    "patterns.red_flags": "Psychological levers used by the script; the same codes are used by the pause screen checklist",
+    "patterns.phrase": "Typical sentence of the script in kk / ru / en"
+  },
+  "red_flag_codes": {
+    "secrecy": "Tell no one / do not hang up",
+    "act_now": "Act right now or lose your money",
+    "code": "Tell me the code from the SMS or eGov",
+    "transfer": "Move money to a safe or reserve account",
+    "authority": "I am from the bank, police, prosecutor or National Bank",
+    "fear": "Threat of loss, arrest or harm to a relative",
+    "reward": "Promise of a payment, bonus or profit",
+    "install_app": "Install an app or share your screen"
+  },
+  "categories": [
+    {
+      "id": "fake_bank_security",
+      "name": {"kk": "Жалған банк қауіпсіздік қызметі", "ru": "Лжеслужба безопасности банка", "en": "Fake bank security service"},
+      "safe_response": {"kk": "Тұтқаны қойып, картаңыздағы нөмір бойынша банкке өзіңіз қоңырау шалыңыз.", "ru": "Положите трубку и сами позвоните в банк по номеру на вашей карте.", "en": "Hang up and call your bank yourself using the number on your card."}
+    },
+    {
+      "id": "fake_authority",
+      "name": {"kk": "Жалған полиция, прокуратура немесе «Ұлттық банк»", "ru": "Лжеполиция, лжепрокуратура или «Нацбанк»", "en": "Fake police, prosecutor or National Bank"},
+      "safe_response": {"kk": "Нағыз қызметкерлер телефонмен ақша, код немесе құпия сақтауды сұрамайды. Тұтқаны қойып, 102-ге қоңырау шалыңыз.", "ru": "Настоящие сотрудники не просят по телефону деньги, коды или секретности. Положите трубку и позвоните 102.", "en": "Real officers never ask for money, codes or secrecy by phone. Hang up and call 102."}
+    },
+    {
+      "id": "safe_account",
+      "name": {"kk": "«Қауіпсіз шотқа» аударым", "ru": "Перевод на «безопасный счёт»", "en": "Transfer to a \"safe account\""},
+      "safe_response": {"kk": "«Қауіпсіз шот» деген болмайды. Ештеңе аудармаңыз.", "ru": "«Безопасных счетов» не бывает. Ничего не переводите.", "en": "There is no such thing as a safe account. Do not transfer anything."}
+    },
+    {
+      "id": "code_request",
+      "name": {"kk": "SMS немесе eGov кодын сұрау", "ru": "Запрос кода из SMS или eGov", "en": "Request for an SMS or eGov code"},
+      "safe_response": {"kk": "Код — ақшаңыздың кілті. Оны ешкімге айтпаңыз.", "ru": "Код — это ключ от ваших денег. Никому его не называйте.", "en": "A code is the key to your money. Never tell it to anyone."}
+    },
+    {
+      "id": "relative_in_trouble",
+      "name": {"kk": "Туысы қиын жағдайда", "ru": "Родственник в беде", "en": "Relative in trouble"},
+      "safe_response": {"kk": "Тұтқаны қойып, туысыңызға әдеттегі нөмірі бойынша қоңырау шалыңыз. Отбасылық кодтық сөзді сұраңыз.", "ru": "Положите трубку и позвоните родственнику по его обычному номеру. Спросите семейное кодовое слово.", "en": "Hang up and call your relative on their usual number. Ask for your family code word."}
+    },
+    {
+      "id": "deepfake_voice",
+      "name": {"kk": "Жасанды дауыс немесе бейне", "ru": "Поддельный голос или видео", "en": "Cloned voice or video"},
+      "safe_response": {"kk": "Тек нағыз адам білетін сұрақ қойыңыз немесе оның әдеттегі нөміріне қайта қоңырау шалыңыз.", "ru": "Задайте вопрос, ответ на который знает только настоящий человек, или перезвоните ему по обычному номеру.", "en": "Ask a question only the real person can answer, or call them back on their usual number."}
+    },
+    {
+      "id": "loan_in_your_name",
+      "name": {"kk": "«Сіздің атыңызға несие рәсімделуде»", "ru": "«На вас оформляют кредит»", "en": "\"A loan is being taken in your name\""},
+      "safe_response": {"kk": "Бейтаныс адамның кеңесімен несие алмаңыз. eGov немесе банк арқылы өзіңіз тексеріңіз.", "ru": "Не берите кредит по совету незнакомца. Проверьте сами через eGov или банк.", "en": "Never take a loan on a stranger's advice. Check yourself through eGov or your bank."}
+    },
+    {
+      "id": "remote_access",
+      "name": {"kk": "Қашықтан қол жеткізу қосымшасы", "ru": "Приложение удалённого доступа", "en": "Remote-access app"},
+      "safe_response": {"kk": "Қоңырау шалушының өтінішімен қосымша орнатпаңыз және экранды көрсетпеңіз.", "ru": "Не устанавливайте приложения и не показывайте экран по просьбе звонящего.", "en": "Never install an app or share your screen because a caller asks you to."}
+    },
+    {
+      "id": "benefit_compensation",
+      "name": {"kk": "Жалған өтемақы немесе зейнетақыға үстеме", "ru": "Ложная компенсация или надбавка к пенсии", "en": "Fake compensation or pension bonus"},
+      "safe_response": {"kk": "Мемлекеттік төлемдер үшін алым алынбайды. ХҚКО-да немесе eGov-та өзіңіз тексеріңіз.", "ru": "За государственные выплаты не берут сборов. Проверьте сами в ЦОНе или на eGov.", "en": "State payments never require a fee. Check yourself at a Public Service Centre or on eGov."}
+    },
+    {
+      "id": "phishing_sms",
+      "name": {"kk": "Фишингтік SMS немесе сілтеме", "ru": "Фишинговое SMS или ссылка", "en": "Phishing SMS or link"},
+      "safe_response": {"kk": "Сілтемелерді ашпаңыз. Банк қосымшасын өзіңіз ашыңыз.", "ru": "Не открывайте ссылки. Откройте банковское приложение сами.", "en": "Do not open links. Open your bank app yourself."}
+    },
+    {
+      "id": "utility_service",
+      "name": {"kk": "Жалған коммуналдық немесе байланыс қызметі", "ru": "Ложные коммунальные службы или оператор связи", "en": "Fake utility or mobile operator"},
+      "safe_response": {"kk": "Тұтқаны қойып, қызметтің ресми нөміріне қоңырау шалыңыз.", "ru": "Положите трубку и позвоните на официальный номер службы.", "en": "Hang up and call the official number of the service."}
+    },
+    {
+      "id": "investment",
+      "name": {"kk": "Тым тиімді инвестиция", "ru": "Слишком выгодные инвестиции", "en": "Too-good-to-be-true investment"},
+      "safe_response": {"kk": "Кепілдік берілген жоғары табыс — пирамиданың белгісі. Ақша салмас бұрын жақындарыңызбен ақылдасыңыз.", "ru": "Гарантированный высокий доход — признак пирамиды. Посоветуйтесь с близкими, прежде чем вкладывать деньги.", "en": "Guaranteed high income is a sign of a pyramid scheme. Talk to your family before you invest."}
+    }
+  ],
+  "patterns": [
+    {"id": "QP-001", "category": "fake_bank_security", "channel": ["phone_call"], "asks_for": ["sms_code"], "red_flags": ["authority", "fear", "act_now"],
+     "phrase": {"kk": "Бұл сіздің банкіңіздің қауіпсіздік қызметі. Дәл қазір біреу ақшаңызды ұрлауға тырысып жатыр.", "ru": "Это служба безопасности вашего банка. Прямо сейчас кто-то пытается украсть ваши деньги.", "en": "This is the security service of your bank. Someone is trying to steal your money right now."}},
+    {"id": "QP-002", "category": "fake_bank_security", "channel": ["phone_call", "messenger_call"], "asks_for": ["card_details"], "red_flags": ["authority", "act_now"],
+     "phrase": {"kk": "Картаңыздан күдікті аударым жасалды. Оны тоқтату үшін карта деректерін растаңыз.", "ru": "С вашей карты прошёл подозрительный перевод. Чтобы его отменить, подтвердите данные карты.", "en": "A suspicious transfer was made from your card. To cancel it, confirm your card details."}},
+    {"id": "QP-003", "category": "fake_authority", "channel": ["phone_call"], "asks_for": ["transfer"], "red_flags": ["authority", "secrecy", "fear"],
+     "phrase": {"kk": "Сіздің шотыңыз қылмысты қаржыландыруға пайдаланылып жатыр. Тергеуге көмектесуге міндеттісіз және ешкімге айтпаңыз.", "ru": "Ваш счёт используют для финансирования преступления. Вы обязаны помочь следствию и никому не говорить.", "en": "Your account is being used to finance a crime. You must help the investigation and tell no one."}},
+    {"id": "QP-004", "category": "fake_authority", "channel": ["messenger_video"], "asks_for": ["transfer"], "red_flags": ["authority", "fear", "act_now"],
+     "phrase": {"kk": "Бұл Ұлттық банк. Бүгін әрекет етпесеңіз, жинақтарыңыз бұғатталады.", "ru": "Это Национальный банк. Ваши сбережения заморозят, если вы не примете меры сегодня.", "en": "This is the National Bank. Your savings will be frozen unless you act today."}},
+    {"id": "QP-005", "category": "safe_account", "channel": ["phone_call"], "asks_for": ["transfer"], "red_flags": ["transfer", "act_now", "authority"],
+     "phrase": {"kk": "Барлық ақшаңызды қауіпсіз шотқа аударыңыз. Тексерістен кейін қайтарамыз.", "ru": "Переведите все деньги на безопасный счёт. После проверки мы их вернём.", "en": "Move all your money to a safe account. We will return it after the check."}},
+    {"id": "QP-006", "category": "safe_account", "channel": ["phone_call"], "asks_for": ["cash_deposit"], "red_flags": ["transfer", "secrecy", "act_now"],
+     "phrase": {"kk": "Қолма-қол ақшаны шешіп, банкомат арқылы осы резервтік шотқа салыңыз. Банк қызметкерлеріне себебін айтпаңыз.", "ru": "Снимите наличные и внесите их через банкомат на этот резервный счёт. Не говорите сотрудникам банка зачем.", "en": "Withdraw your cash and pay it into this reserve account at a cash machine. Do not tell the bank staff why."}},
+    {"id": "QP-007", "category": "code_request", "channel": ["phone_call"], "asks_for": ["sms_code"], "red_flags": ["code", "act_now"],
+     "phrase": {"kk": "Қазір сізге SMS-код келеді. Операцияны бұғаттауым үшін оны маған айтыңыз.", "ru": "Сейчас вам придёт SMS-код. Продиктуйте его мне, чтобы я заблокировал операцию.", "en": "You will now receive an SMS code. Read it to me so I can block the operation."}},
+    {"id": "QP-008", "category": "code_request", "channel": ["phone_call"], "asks_for": ["egov_code"], "red_flags": ["code", "authority", "act_now"],
+     "phrase": {"kk": "Цифрлық құжаттарыңызды жаңарту керек. eGov жаңа ғана жіберген кодты айтыңыз.", "ru": "Нужно обновить ваши цифровые документы. Назовите код, который только что прислал eGov.", "en": "Your digital documents need updating. Tell me the code that eGov has just sent you."}},
+    {"id": "QP-009", "category": "relative_in_trouble", "channel": ["phone_call"], "asks_for": ["transfer"], "red_flags": ["fear", "act_now", "secrecy"],
+     "phrase": {"kk": "Анашым, мен апатқа түстім. Маған дәл қазір ақша керек, әкеме айтпашы.", "ru": "Мама, я попал в аварию. Мне срочно нужны деньги, только не говори папе.", "en": "Mum, I have had an accident. I need money right now, please don't tell Dad."}},
+    {"id": "QP-010", "category": "relative_in_trouble", "channel": ["phone_call"], "asks_for": ["cash_courier"], "red_flags": ["authority", "fear", "act_now"],
+     "phrase": {"kk": "Немереңіз ұсталды. Қылмыстық іс қозғалмауы үшін өтемақыны дәл қазір мен арқылы беріңіз.", "ru": "Ваш внук задержан. Чтобы не заводить уголовное дело, срочно передайте компенсацию через меня.", "en": "Your grandson has been detained. To avoid a criminal case, pay compensation through me right now."}},
+    {"id": "QP-011", "category": "deepfake_voice", "channel": ["messenger_voice"], "asks_for": ["transfer"], "red_flags": ["act_now", "secrecy"],
+     "phrase": {"kk": "(таныс дауыспен) Бұл менмін, телефоным бұзылды, мына картаға ақша аудар, кейін түсіндіремін.", "ru": "(знакомым голосом) Это я, телефон сломался, переведи деньги на эту карту, потом объясню.", "en": "(in a familiar voice) It's me, my phone is broken, send money to this card, I'll explain later."}},
+    {"id": "QP-012", "category": "deepfake_voice", "channel": ["messenger_video"], "asks_for": ["card_details"], "red_flags": ["authority", "reward"],
+     "phrase": {"kk": "(белгілі адамның бейнесі) Мемлекет әр зейнеткерге төлем береді, мына сілтеме арқылы тіркеліңіз.", "ru": "(видео с известным человеком) Государство дарит каждому пенсионеру выплату, зарегистрируйтесь по ссылке.", "en": "(video of a famous person) The state is giving every pensioner a payment, register through this link."}},
+    {"id": "QP-013", "category": "loan_in_your_name", "channel": ["phone_call"], "asks_for": ["new_loan", "transfer"], "red_flags": ["fear", "act_now", "authority"],
+     "phrase": {"kk": "Сіздің атыңызға несие рәсімделіп жатыр. Оны жою үшін қарсы несие алып, бізге аударыңыз.", "ru": "На вас оформляют кредит. Чтобы его аннулировать, оформите встречный кредит и переведите нам.", "en": "Someone is taking a loan in your name. To cancel it, take a counter-loan and send it to us."}},
+    {"id": "QP-014", "category": "loan_in_your_name", "channel": ["sms"], "asks_for": ["call_back"], "red_flags": ["fear"],
+     "phrase": {"kk": "Сіздің атыңызға несие өтінімі мақұлданды. Егер бұл сіз болмасаңыз, осы нөмірге қоңырау шалыңыз.", "ru": "Заявка на кредит на ваше имя одобрена. Если это были не вы, позвоните по этому номеру.", "en": "A loan application in your name has been approved. If it was not you, call this number."}},
+    {"id": "QP-015", "category": "remote_access", "channel": ["phone_call"], "asks_for": ["install_app"], "red_flags": ["install_app", "authority"],
+     "phrase": {"kk": "Маманымыз шотыңызды қорғауы үшін мына қолдау қосымшасын орнатыңыз.", "ru": "Установите это приложение поддержки, чтобы наш специалист защитил ваш счёт.", "en": "Install this support app so that our specialist can protect your account."}},
+    {"id": "QP-016", "category": "remote_access", "channel": ["messenger_call"], "asks_for": ["screen_share"], "red_flags": ["install_app", "act_now"],
+     "phrase": {"kk": "Мессенджерде экранды көрсетуді қосыңыз, мен не басу керектігін көрсетемін.", "ru": "Включите демонстрацию экрана в мессенджере, я покажу, что нажимать.", "en": "Turn on screen sharing in the messenger and I will show you what to press."}},
+    {"id": "QP-017", "category": "benefit_compensation", "channel": ["phone_call"], "asks_for": ["fee"], "red_flags": ["reward", "authority"],
+     "phrase": {"kk": "Сізге дәрі-дәрмек үшін өтемақы тиесілі. Оны алу үшін рәсімдеуге шағын алым төлеңіз.", "ru": "Вам положена компенсация за лекарства. Оплатите небольшой сбор за оформление, чтобы её получить.", "en": "You are entitled to compensation for medicines. Pay a small processing fee to receive it."}},
+    {"id": "QP-018", "category": "benefit_compensation", "channel": ["sms"], "asks_for": ["card_details"], "red_flags": ["reward", "act_now"],
+     "phrase": {"kk": "Зейнетақыңыз қайта есептелді. Қосымша төлемді алу үшін картаңызды бүгін растаңыз.", "ru": "Ваша пенсия пересчитана. Подтвердите карту сегодня, чтобы получить доплату.", "en": "Your pension has been recalculated. Confirm your card today to receive the extra payment."}},
+    {"id": "QP-019", "category": "phishing_sms", "channel": ["sms"], "asks_for": ["card_details", "sms_code"], "red_flags": ["reward", "act_now"],
+     "phrase": {"kk": "Бонустарыңыз бүгін жанып кетеді. Оларды сілтеме арқылы ақшаға айырбастаңыз.", "ru": "Ваши бонусы сгорают сегодня. Обменяйте их на деньги по ссылке.", "en": "Your bonus points expire today. Exchange them for money at the link."}},
+    {"id": "QP-020", "category": "phishing_sms", "channel": ["sms", "messenger_message"], "asks_for": ["card_details"], "red_flags": ["fear", "act_now"],
+     "phrase": {"kk": "Картаңыз бұғатталды. Бұғаттан шығару үшін сілтемеге деректеріңізді енгізіңіз.", "ru": "Ваша карта заблокирована. Для разблокировки введите данные по ссылке.", "en": "Your card is blocked. To unblock it, enter your details at the link."}},
+    {"id": "QP-021", "category": "utility_service", "channel": ["phone_call"], "asks_for": ["sms_code"], "red_flags": ["code", "authority"],
+     "phrase": {"kk": "SIM-картаңыздың келісімшарты аяқталып жатыр. Ұзарту үшін SMS-тегі кодты айтыңыз.", "ru": "У вашей SIM-карты заканчивается договор. Назовите код из SMS, чтобы продлить его.", "en": "Your SIM card contract is ending. Tell me the code from the SMS to extend it."}},
+    {"id": "QP-022", "category": "utility_service", "channel": ["phone_call"], "asks_for": ["prepayment"], "red_flags": ["authority", "act_now", "fear"],
+     "phrase": {"kk": "Үйіңізде газ есептегіштері ауыстырылуда. Бүгін алдын ала төлем жасаңыз, әйтпесе газ өшіріледі.", "ru": "В вашем доме меняют газовые счётчики. Внесите предоплату сегодня, иначе газ отключат.", "en": "Gas meters are being replaced in your building. Pay in advance today or the gas will be cut off."}},
+    {"id": "QP-023", "category": "investment", "channel": ["messenger_message"], "asks_for": ["deposit"], "red_flags": ["reward", "act_now"],
+     "phrase": {"kk": "Мемлекет қолдайтын жоба айына 30% кепілдік береді. Орын аз, бүгін қосылыңыз.", "ru": "Проект с государственной поддержкой гарантирует 30% в месяц. Мест мало, вступайте сегодня.", "en": "A state-backed project guarantees 30% a month. Places are limited, join today."}},
+    {"id": "QP-024", "category": "investment", "channel": ["phone_call"], "asks_for": ["deposit", "install_app"], "red_flags": ["reward", "install_app"],
+     "phrase": {"kk": "Біздің талдаушымыз биржада табыс табуға көмектеседі. Шағын салымнан бастап, біздің қосымшаны орнатыңыз.", "ru": "Наш аналитик поможет вам заработать на бирже. Начните с небольшого депозита и установите наше приложение.", "en": "Our analyst will help you earn on the stock exchange. Start with a small deposit and install our app."}}
+  ]
+}

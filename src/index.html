@@ -1,0 +1,1789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data: blob:; base-uri 'none'; form-action 'none'">
+<meta name="description" content="Qalqan-60+: open-source anti-panic and delegated family shield for people aged 60+. Clickable prototype.">
+<title>Qalqan-60+ clickable prototype</title>
+<style>
+:root{
+  --ink:#14263A; --ink2:#3B4C5E; --paper:#FBF8F3; --card:#FFFFFF; --line:#C5CFD9; --line-strong:#6B7C8D;
+  --teal:#0B5D6B; --teal-d:#084652; --teal-soft:#DDEFEF; --calm:#E6EFF7; --calm-ink:#12324A;
+  --sand:#F5EAD6; --amber:#6E4300; --ok:#1E6B3A; --ok-soft:#E1F2E6; --danger:#8F1D1D; --focus:#0A58CA;
+  --page:#E9EEF2;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{font-family:"Segoe UI","Noto Sans",Roboto,Arial,sans-serif;color:var(--ink);background:var(--page);line-height:1.45}
+.skip{position:absolute;left:-999px;top:0;background:#fff;color:var(--ink);padding:.5em 1em;z-index:50}
+.skip:focus{left:8px;top:8px}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.page-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:.4em 1.2em;padding:12px 24px 4px}
+.page-head h1{font-size:20px;margin:0}
+.page-head p{margin:0;color:var(--ink2);font-size:14px}
+.stage{display:flex;gap:28px;align-items:flex-start;justify-content:center;padding:10px 20px 16px;flex-wrap:wrap}
+.phone-col{display:flex;justify-content:center}
+.phone-wrap{position:relative;width:418px;height:872px}
+.phone{position:absolute;left:0;top:0;width:418px;height:872px;transform-origin:0 0;background:#0E1114;border-radius:52px;padding:14px;box-shadow:0 18px 50px rgba(20,38,58,.35)}
+.phone-screen{position:relative;width:390px;height:844px;border-radius:40px;overflow:hidden;background:var(--paper);display:flex;flex-direction:column;font-size:18px}
+.phone[data-fs="2"] .phone-screen{font-size:21px}
+.phone[data-fs="3"] .phone-screen{font-size:24px}
+.statusbar{display:flex;justify-content:space-between;align-items:center;padding:10px 26px 4px;font-size:14px;font-weight:600;color:var(--ink);flex:none}
+.statusbar .sb-right{letter-spacing:.04em}
+.appbar{flex:none;padding:4px 14px 8px;border-bottom:1px solid var(--line);background:var(--paper)}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:19px;color:var(--teal-d)}
+.brand svg{width:26px;height:26px;color:var(--teal);flex:none}
+.brand > span{white-space:nowrap}
+.brand small{font-weight:500;font-size:13px;color:var(--ink2)}
+.ctrl-row{display:flex;justify-content:space-between;gap:8px;margin-top:6px}
+.seg{display:inline-flex;border:2px solid var(--line-strong);border-radius:12px;overflow:hidden}
+.seg button{font:inherit;font-size:15px;font-weight:700;min-width:46px;min-height:40px;padding:0 9px;border:0;background:#fff;color:var(--ink);cursor:pointer}
+.seg button+button{border-left:2px solid var(--line-strong)}
+.seg button[aria-pressed="true"]{background:var(--teal);color:#fff}
+.banner{flex:none;display:flex;gap:.5em;align-items:flex-start;margin:0;padding:.45em .8em;background:var(--teal-soft);color:var(--teal-d);font-size:.78em;font-weight:600;border-bottom:1px solid var(--line)}
+.banner svg{width:1.3em;height:1.3em;flex:none;margin-top:.1em}
+.screens{flex:1;overflow-y:auto;padding:.8em .9em 1.4em}
+.screen h2{font-size:1.28em;line-height:1.25;margin:.15em 0 .55em}
+.screen h2:focus{outline:none}
+.screen h3{font-size:1.02em;margin:0 0 .4em}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:.8em .9em;margin:0 0 .75em}
+.muted{color:var(--ink2)}
+.small{font-size:.86em}
+ul.plain{list-style:none;margin:0;padding:0}
+ul.plain li{display:flex;gap:.55em;align-items:flex-start;margin:.35em 0}
+.ic{flex:none;width:1.35em;height:1.35em;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.85em;margin-top:.1em}
+.ic.yes{background:var(--ok-soft);color:var(--ok)}
+.ic.no{background:#F3E3E3;color:var(--danger)}
+.btn{font:inherit;display:block;width:100%;min-height:56px;padding:.55em .9em;border-radius:14px;border:2px solid var(--teal);background:var(--teal);color:#fff;font-weight:700;cursor:pointer;margin:.45em 0;text-align:center}
+.btn:hover{background:var(--teal-d)}
+.btn.secondary{background:#fff;color:var(--teal-d)}
+.btn.secondary:hover{background:var(--teal-soft)}
+.btn.quiet{background:transparent;border-color:var(--line-strong);color:var(--ink)}
+.btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
+.btn.big{min-height:68px;font-size:1.1em}
+.btn-row{display:flex;gap:.6em}
+.btn-row .btn{flex:1}
+.steps{display:flex;gap:6px;margin:0 0 .6em}
+.steps span{flex:1;height:6px;border-radius:3px;background:var(--line)}
+.steps span.on{background:var(--teal)}
+.step-label{font-size:.8em;color:var(--ink2);margin:0 0 .2em;font-weight:600}
+.sw{display:flex;gap:.65em;align-items:flex-start;margin:.2em 0 .3em;cursor:pointer;font-weight:600}
+.sw input{appearance:none;-webkit-appearance:none;flex:none;width:3em;height:1.7em;border-radius:1em;background:#8392A1;border:2px solid #56667A;position:relative;cursor:pointer;margin:.1em 0 0}
+.sw input::after{content:"";position:absolute;top:.13em;left:.15em;width:1.15em;height:1.15em;border-radius:50%;background:#fff;transition:left .15s}
+.sw input:checked{background:var(--teal);border-color:var(--teal-d)}
+.sw input:checked::after{left:1.45em}
+.note{font-size:.84em;color:var(--ink2);margin:0 0 .5em 3.65em}
+.field{margin:.55em 0}
+.field label{display:block;font-weight:600;margin-bottom:.2em}
+.field input[type=text],.field input[type=tel],.field input[type=password]{font:inherit;width:100%;min-height:52px;padding:.4em .6em;border:2px solid var(--line-strong);border-radius:12px;background:#fff;color:var(--ink)}
+.hint{font-size:.84em;color:var(--ink2);margin:.25em 0 0}
+.warn{background:var(--sand);color:var(--amber);border-radius:12px;padding:.55em .7em;font-size:.86em;font-weight:600;margin:.5em 0}
+.err{color:var(--danger);font-weight:700;font-size:.86em;margin:.25em 0 0;min-height:1em}
+.status-card{display:flex;gap:.7em;align-items:center;background:var(--ok-soft);border:2px solid #9CCBAA;border-radius:18px;padding:.8em .9em;margin-bottom:.75em}
+.status-card.manual{background:var(--sand);border-color:#D9B97E}
+.status-card .dot{flex:none;width:2.4em;height:2.4em;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center}
+.status-card.manual .dot{background:var(--amber)}
+.status-card .dot svg{width:1.4em;height:1.4em}
+.status-card strong{display:block;font-size:1.12em}
+.status-card span{font-size:.88em;color:var(--ink2)}
+.sig{display:flex;gap:.5em;margin:.3em 0}
+.sig b{flex:none;color:var(--teal-d)}
+.call{background:#1F3346;color:#fff;border-radius:18px;padding:.8em .9em;margin-bottom:.7em}
+.call .who{font-size:1.15em;font-weight:700}
+.call .sub{font-size:.85em;opacity:.9}
+.call .live{display:inline-flex;align-items:center;gap:.4em;font-size:.85em;margin-top:.3em}
+.call .live::before{content:"";width:.6em;height:.6em;border-radius:50%;background:#6FE39A}
+.call .says{margin:.5em 0 0;font-size:.9em;background:rgba(255,255,255,.12);border-radius:10px;padding:.45em .6em}
+.app-mock{border:2px solid #7C8B99;border-radius:16px;padding:.6em .8em;margin-bottom:.7em;background:#fff}
+.app-mock .bar{font-weight:700;color:#24415E}
+.app-mock .row{display:flex;justify-content:space-between;border-bottom:1px dashed var(--line);padding:.3em 0;font-size:.9em}
+.sms{background:#EEF1F4;border-radius:16px 16px 16px 4px;padding:.55em .75em;margin-bottom:.6em;font-size:.92em}
+.sms .from{font-size:.8em;color:var(--ink2);font-weight:700}
+.ai-note{margin-top:.45em;background:var(--sand);color:var(--amber);border-radius:10px;padding:.35em .55em;font-size:.86em;font-weight:600}
+.det-row{display:flex;justify-content:space-between;align-items:center;gap:.6em;padding:.35em 0;border-bottom:1px solid var(--line)}
+.det-row:last-child{border-bottom:0}
+.pill{flex:none;font-weight:800;font-size:.85em;padding:.15em .6em;border-radius:999px;background:#E3E8ED;color:var(--ink2)}
+.pill.yes{background:#F6E1C4;color:var(--amber)}
+.pill.no{background:var(--ok-soft);color:var(--ok)}
+.msg{border-radius:14px;padding:.6em .75em;font-weight:600;margin:.5em 0}
+.msg.info{background:var(--teal-soft);color:var(--teal-d)}
+.msg.calm{background:var(--ok-soft);color:var(--ok)}
+.pause-mode .phone-screen{background:var(--calm)}
+.pause-mode .appbar{background:var(--calm)}
+.pause-mode .banner,.rel-mode .banner,.rel-mode .appbar{display:none}
+#s4 h2{color:var(--calm-ink)}
+.timer-row{display:flex;align-items:center;justify-content:space-between;gap:.6em;background:#fff;border-radius:18px;padding:.6em .8em;margin:.4em 0 .75em;border:1px solid #B9CCE0}
+.timer-label{font-size:.82em;color:var(--ink2);font-weight:600}
+.timer{font-size:2.5em;font-weight:800;color:var(--calm-ink);font-variant-numeric:tabular-nums;line-height:1.05}
+.breath{display:flex;flex-direction:column;align-items:center;gap:.25em;min-width:6.2em}
+.breath-circle{width:4.4em;height:4.4em;border-radius:50%;background:radial-gradient(circle,#BFD8EE 0,#8DB6DA 70%);animation:breathe 8s ease-in-out infinite}
+.breath-text{font-size:.82em;font-weight:700;color:var(--calm-ink)}
+@keyframes breathe{0%,100%{transform:scale(.72)}50%{transform:scale(1)}}
+.check{display:flex;gap:.6em;align-items:flex-start;padding:.35em 0;cursor:pointer}
+.check input{flex:none;width:1.45em;height:1.45em;margin:.1em 0 0;accent-color:var(--teal)}
+.verdict{border-radius:14px;padding:.6em .75em;font-weight:700;margin:.5em 0 0}
+.verdict.scam{background:#F6E1C4;color:var(--amber);border:2px solid #D9A55A}
+.verdict.none{background:var(--ok-soft);color:var(--ok)}
+.sent-note{font-size:.84em;background:#fff;border:1px dashed #8FA6BC;border-radius:12px;padding:.5em .65em;margin:.5em 0;color:var(--calm-ink)}
+.rel-head{background:#24415E;color:#fff;padding:.55em .9em;display:flex;align-items:center;gap:.6em}
+.rel-head .av{width:2em;height:2em;border-radius:50%;background:#F0C987;color:#24415E;display:flex;align-items:center;justify-content:center;font-weight:800}
+.sim-tag{font-size:.75em;font-weight:700;background:#FFF3C4;color:#5A4300;padding:.3em .8em}
+.sms-in{background:#fff;border:1px solid var(--line);border-radius:16px 16px 16px 4px;padding:.6em .75em;margin:.6em 0;font-size:.92em}
+.sms-in .time{display:block;font-size:.75em;color:var(--ink2);margin-top:.3em}
+.linkbtn{font:inherit;background:none;border:0;padding:0;color:#0A4FA3;text-decoration:underline;cursor:pointer;font-weight:600;word-break:break-all;text-align:left}
+.browser{border:2px solid #7C8B99;border-radius:16px;overflow:hidden;background:#fff}
+.urlbar{background:#E9EDF1;padding:.4em .6em;font-size:.8em;font-family:Consolas,monospace;color:#2B3B4C;word-break:break-all}
+.browser .inner{padding:.7em .8em}
+.lang-links{display:flex;gap:.8em;font-size:.85em;margin-bottom:.4em}
+.never li{color:var(--ink)}
+.data-list li{border-bottom:1px solid var(--line);padding-bottom:.3em}
+.toast{position:absolute;left:14px;right:14px;bottom:18px;background:#14263A;color:#fff;border-radius:14px;padding:.6em .8em;font-weight:600;font-size:.9em;box-shadow:0 6px 20px rgba(0,0,0,.3)}
+.modal{position:absolute;inset:0;background:rgba(20,38,58,.6);display:flex;align-items:center;justify-content:center;padding:1em;z-index:20}
+.modal .dialog{background:#fff;border-radius:18px;padding:1em;width:100%}
+.modal h2{font-size:1.2em;margin:0 0 .4em}
+.panel{width:420px;max-width:100%;background:#fff;border-radius:18px;padding:16px 18px;box-shadow:0 8px 30px rgba(20,38,58,.15);font-size:15px}
+.panel h2{font-size:18px;margin:0 0 2px}
+.panel h3{font-size:14px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink2);margin:14px 0 6px}
+.panel p{margin:0}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.pbtn{font:inherit;font-size:14px;text-align:left;padding:8px 10px;border-radius:10px;border:2px solid var(--line-strong);background:#fff;color:var(--ink);cursor:pointer;min-height:40px}
+.pbtn:hover{background:var(--teal-soft)}
+.pbtn[aria-current="true"],.pbtn[aria-pressed="true"]{background:var(--teal);border-color:var(--teal);color:#fff}
+.pbtn.wide{grid-column:1/-1}
+.cue{background:#FFF8E1;border-left:4px solid #C9A227;padding:8px 10px;border-radius:6px;font-size:14px}
+.log{margin:0;padding-left:18px;font-family:Consolas,monospace;font-size:12.5px;max-height:190px;overflow:auto}
+.log li{margin:2px 0}
+.page-foot{text-align:center;font-size:13px;color:var(--ink2);padding:0 16px 18px}
+.visually-live{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
+body.shot{background:transparent}
+body.shot .page-head,body.shot .panel,body.shot .page-foot,body.shot .skip{display:none}
+body.shot .stage{padding:0;display:block}
+body.shot .phone{box-shadow:none}
+body.shot *{animation:none!important;transition:none!important}
+@media (prefers-reduced-motion:reduce){.breath-circle{animation:none;transform:scale(.86)}.sw input::after{transition:none}}
+@media (max-width:900px){.panel{width:100%}}
+</style>
+</head>
+<body>
+<a class="skip" href="#phoneWrap">Skip to the prototype</a>
+<header class="page-head">
+  <h1>Qalqan-60+ · clickable prototype</h1>
+  <p>Ethical Digital Design · DPG track · KBTU, Almaty 2026 · runs offline, no cookies, no trackers, no external requests</p>
+</header>
+<main class="stage">
+  <div class="phone-col">
+    <div class="phone-wrap" id="phoneWrap">
+      <div class="phone" id="phone" data-fs="1" lang="en">
+        <div class="phone-screen">
+          <div class="statusbar" aria-hidden="true"><span id="sbTime">14:02</span><span class="sb-right">4G ▮▮▮ 82%</span></div>
+          <div class="appbar" id="appbar">
+            <div class="brand">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z" fill="currentColor"></path><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              <span>Qalqan-60+</span> <small data-i18n="app_tag">Digital shield for people 60+</small>
+            </div>
+            <div class="ctrl-row">
+              <div class="seg" role="group" id="langSeg" data-i18n-aria="lang_group" aria-label="Language">
+                <button type="button" data-lang="kk" lang="kk" aria-label="ҚАЗ, Қазақша">ҚАЗ</button>
+                <button type="button" data-lang="ru" lang="ru" aria-label="РУС, Русский">РУС</button>
+                <button type="button" data-lang="en" lang="en" aria-label="ENG, English">ENG</button>
+              </div>
+              <div class="seg" role="group" id="fsSeg" data-i18n-aria="fs_group" aria-label="Text size">
+                <button type="button" data-fs="1" data-i18n-aria="fs_n_aria" aria-label="A, normal text size">A</button>
+                <button type="button" data-fs="2" data-i18n-aria="fs_l_aria" aria-label="A+, large text">A+</button>
+                <button type="button" data-fs="3" data-i18n-aria="fs_xl_aria" aria-label="A++, extra large text">A++</button>
+              </div>
+            </div>
+          </div>
+          <p class="banner" id="banner"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z" fill="currentColor"></path></svg><span data-i18n="banner">Zero surveillance: no call recording, no chat reading, no balances, no location.</span></p>
+
+          <div class="screens" id="screens">
+
+            <!-- SCREEN 1: onboarding and informed consent -->
+            <section class="screen" id="s1" aria-labelledby="s1h">
+              <p class="step-label" id="obStepLabel">Step 1 of 3</p>
+              <div class="steps" aria-hidden="true"><span id="st1"></span><span id="st2"></span><span id="st3"></span></div>
+              <h2 id="s1h" tabindex="-1">Welcome</h2>
+
+              <div id="ob1">
+                <div class="card">
+                  <h3 data-i18n="ob_does_t">What Qalqan does</h3>
+                  <ul class="plain">
+                    <li><span class="ic yes" aria-hidden="true">✓</span><span data-i18n="ob_does1"></span></li>
+                    <li><span class="ic yes" aria-hidden="true">✓</span><span data-i18n="ob_does2"></span></li>
+                    <li><span class="ic yes" aria-hidden="true">✓</span><span data-i18n="ob_does3"></span></li>
+                  </ul>
+                </div>
+                <div class="card never">
+                  <h3 data-i18n="ob_never_t">What Qalqan never does</h3>
+                  <ul class="plain">
+                    <li><span class="ic no" aria-hidden="true">✕</span><span data-i18n="ob_never1"></span></li>
+                    <li><span class="ic no" aria-hidden="true">✕</span><span data-i18n="ob_never2"></span></li>
+                    <li><span class="ic no" aria-hidden="true">✕</span><span data-i18n="ob_never3"></span></li>
+                    <li><span class="ic no" aria-hidden="true">✕</span><span data-i18n="ob_never4"></span></li>
+                  </ul>
+                  <p class="hint" data-i18n="ob_never5"></p>
+                </div>
+                <button type="button" class="btn big" id="ob1Next" data-i18n="btn_next">Next</button>
+              </div>
+
+              <div id="ob2" hidden>
+                <div class="card">
+                  <label class="sw"><input type="checkbox" role="switch" id="cAuto"><span data-i18n="ob_c1"></span></label>
+                  <p class="note" data-i18n="ob_c1n"></p>
+                  <label class="sw"><input type="checkbox" role="switch" id="cSms"><span data-i18n="ob_c2"></span></label>
+                  <p class="note" data-i18n="ob_c2n"></p>
+                  <label class="sw"><input type="checkbox" role="switch" id="cAi"><span data-i18n="ob_c3"></span></label>
+                  <p class="note" data-i18n="ob_c3n"></p>
+                </div>
+                <p class="warn" id="obManualNote" data-i18n="ob_manual_note"></p>
+                <p class="hint" data-i18n="ob_withdraw"></p>
+                <div class="btn-row">
+                  <button type="button" class="btn quiet" id="ob2Back" data-i18n="btn_back">Back</button>
+                  <button type="button" class="btn" id="ob2Next" data-i18n="btn_next">Next</button>
+                </div>
+              </div>
+
+              <form id="ob3" hidden novalidate>
+                <div class="field">
+                  <label for="fName" data-i18n="ob_name">Name of your trusted person</label>
+                  <input type="text" id="fName" autocomplete="off" data-i18n-ph="ob_name_ph">
+                  <p class="err" id="eName"></p>
+                </div>
+                <div class="field">
+                  <label for="fPhone" data-i18n="ob_phone">Their phone number</label>
+                  <input type="tel" id="fPhone" autocomplete="off" placeholder="+7 ___ ___ __ __">
+                  <p class="hint" data-i18n="ob_phone_n"></p>
+                  <p class="err" id="ePhone"></p>
+                </div>
+                <div class="field">
+                  <label for="fCode" data-i18n="ob_code">Family code word</label>
+                  <input type="password" id="fCode" autocomplete="off">
+                  <p class="hint" data-i18n="ob_code_hint"></p>
+                  <p class="err" id="eCode"></p>
+                </div>
+                <div class="field">
+                  <label for="fCode2" data-i18n="ob_code2">Repeat the code word</label>
+                  <input type="password" id="fCode2" autocomplete="off">
+                  <p class="err" id="eCode2"></p>
+                </div>
+                <p class="warn" data-i18n="ob_code_warn"></p>
+                <p class="hint" data-i18n="ob_store"></p>
+                <div class="btn-row">
+                  <button type="button" class="btn quiet" id="ob3Back" data-i18n="btn_back">Back</button>
+                  <button type="submit" class="btn" id="ob3Finish" data-i18n="ob_finish">Turn on protection</button>
+                </div>
+              </form>
+            </section>
+
+            <!-- SCREEN 2: calm home shield -->
+            <section class="screen" id="s2" aria-labelledby="s2h" hidden>
+              <h2 id="s2h" tabindex="-1" data-i18n="h_title">Your shield</h2>
+              <div class="status-card" id="statusCard">
+                <div class="dot"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 12 4 4 8-8" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"></path></svg></div>
+                <div><strong id="hStatus">Protection is on</strong><span id="hStatusSub"></span></div>
+              </div>
+              <div class="card">
+                <h3 data-i18n="cb_t">How Qalqan decides</h3>
+                <p class="sig"><span data-i18n="cb_s1"></span></p>
+                <p class="sig"><span data-i18n="cb_s2"></span></p>
+                <p class="msg info small" data-i18n="cb_rule"></p>
+                <p class="small muted" id="hAi"></p>
+              </div>
+              <div class="card">
+                <h3 data-i18n="h_trusted">Trusted person</h3>
+                <p id="hTrusted" class="small"></p>
+              </div>
+              <button type="button" class="btn big secondary" id="btnRushed" data-i18n="btn_rushed">I am being rushed — start a pause</button>
+              <button type="button" class="btn quiet" id="btnPractice" data-i18n="btn_practice">Practise safely</button>
+              <button type="button" class="btn quiet" id="btnPrivacy" data-i18n="btn_privacy">Privacy and data</button>
+            </section>
+
+            <!-- SCREEN 3: simulated scam scenario -->
+            <section class="screen" id="s3" aria-labelledby="s3h" hidden>
+              <h2 id="s3h" tabindex="-1" data-i18n="sc_t">Training: a stranger calls</h2>
+              <p class="small muted" data-i18n="sc_intro"></p>
+              <div class="call" id="callCard" hidden>
+                <div class="who" id="callWho"></div>
+                <div class="sub" id="callSub"></div>
+                <div class="live" id="callLive" data-i18n="call_live">Call in progress</div>
+                <p class="says" id="callSays" hidden></p>
+              </div>
+              <div class="app-mock" id="bankCard" hidden>
+                <div class="bar" data-i18n="bank_app">MyBank (simulation)</div>
+                <div class="row"><span data-i18n="bank_transfer"></span><span>›</span></div>
+                <div class="row"><span data-i18n="bank_rec_l"></span><span>— — —</span></div>
+                <div class="row"><span data-i18n="bank_amount_l"></span><span>— — —</span></div>
+              </div>
+              <div class="sms" id="smsCard" hidden>
+                <div class="from" data-i18n="sms_from">SMS · MyBank</div>
+                <div data-i18n="sms_text"></div>
+                <div class="ai-note" id="aiNote" hidden data-i18n="ai_note"></div>
+              </div>
+              <div class="card">
+                <h3 data-i18n="det_t">What Qalqan notices</h3>
+                <div class="det-row"><span data-i18n="det1"></span><span class="pill" id="det1">—</span></div>
+                <div class="det-row"><span data-i18n="det2"></span><span class="pill" id="det2">—</span></div>
+              </div>
+              <div id="scMsg" role="status"></div>
+              <p class="small muted" id="scHint" data-i18n="sc_hint"></p>
+              <div id="scButtons">
+                <button type="button" class="btn" id="scBank" data-i18n="sc_bank">Simulate: unknown call + opening the bank app</button>
+                <button type="button" class="btn secondary" id="scSms" data-i18n="sc_sms">Simulate: unknown call + an SMS code arrives</button>
+                <button type="button" class="btn quiet" id="scKnown" data-i18n="sc_known">Simulate: your trusted person calls + bank app</button>
+              </div>
+              <button type="button" class="btn quiet" id="scHome" data-i18n="btn_home">Back to home</button>
+            </section>
+
+            <!-- SCREEN 4: 15-minute script-breaking pause -->
+            <section class="screen" id="s4" aria-labelledby="s4h" hidden>
+              <h2 id="s4h" tabindex="-1" data-i18n="p_t">Stop and breathe. You are safe right now.</h2>
+              <p class="muted" data-i18n="p_sub"></p>
+              <div class="timer-row" id="pTimerRow">
+                <div>
+                  <div class="timer-label" data-i18n="p_left">Pause time left</div>
+                  <div class="timer" id="pTimer" role="timer">15:00</div>
+                </div>
+                <div class="breath" aria-hidden="true">
+                  <div class="breath-circle"></div>
+                  <div class="breath-text" id="pBreath"></div>
+                </div>
+              </div>
+              <div class="card" id="pDone" hidden>
+                <h3 data-i18n="p_done_t">The pause is over</h3>
+                <p data-i18n="p_done_x"></p>
+                <button type="button" class="btn" id="pDoneHome" data-i18n="btn_home">Back to home</button>
+              </div>
+              <p class="visually-live" id="pLive" aria-live="polite"></p>
+              <div class="card" id="pChecklist">
+                <h3 data-i18n="p_mt">Is the person on the phone saying any of this?</h3>
+                <label class="check"><input type="checkbox" data-flag="secrecy"><span data-i18n="p_m1"></span></label>
+                <label class="check"><input type="checkbox" data-flag="act_now"><span data-i18n="p_m2"></span></label>
+                <label class="check"><input type="checkbox" data-flag="code"><span data-i18n="p_m3"></span></label>
+                <label class="check"><input type="checkbox" data-flag="transfer"><span data-i18n="p_m4"></span></label>
+                <label class="check"><input type="checkbox" data-flag="authority"><span data-i18n="p_m5"></span></label>
+                <p class="verdict none" id="pVerdict" aria-live="polite"></p>
+              </div>
+              <button type="button" class="btn big" id="pCall">Call someone I trust</button>
+              <button type="button" class="btn secondary" id="pBank" data-i18n="p_bank">Call my bank (number on my card)</button>
+              <p class="sent-note" id="pSent"></p>
+              <form class="card" id="pExit" novalidate>
+                <h3 data-i18n="p_exit_t">End the pause with the family code word</h3>
+                <p class="warn" data-i18n="p_exit_warn"></p>
+                <div class="field">
+                  <label for="pCode" data-i18n="p_exit_label">Family code word</label>
+                  <input type="password" id="pCode" autocomplete="off">
+                </div>
+                <p class="err" id="pExitMsg" role="status"></p>
+                <button type="submit" class="btn quiet" data-i18n="p_exit_btn">End pause</button>
+              </form>
+              <p class="small muted" data-i18n="p_emerg"></p>
+            </section>
+
+            <!-- SCREEN 5: relative's phone, zero-app SMS and no-login web view -->
+            <section class="screen" id="s5" aria-labelledby="s5h" hidden>
+              <p class="sim-tag" id="rBanner"></p>
+              <div class="rel-head"><span class="av" aria-hidden="true">M</span><h2 id="s5h" tabindex="-1">Mum</h2></div>
+              <div id="rSmsView">
+                <div id="rThread"></div>
+                <p class="small muted" id="rNone" hidden data-i18n="r_none"></p>
+              </div>
+              <div id="rStatusView" hidden>
+                <div class="browser">
+                  <div class="urlbar" id="rUrl">q60.example/s#…</div>
+                  <div class="inner">
+                    <div class="lang-links" role="group" aria-label="Language / Тіл / Язык">
+                      <button type="button" class="linkbtn" data-lang="kk" lang="kk">Қазақша</button>
+                      <button type="button" class="linkbtn" data-lang="ru" lang="ru">Русский</button>
+                      <button type="button" class="linkbtn" data-lang="en" lang="en">English</button>
+                    </div>
+                    <h3 data-i18n="r_st_t">Qalqan-60+ status</h3>
+                    <p class="msg info" id="rStActive"></p>
+                    <p class="small" id="rStSince"></p>
+                    <p class="small" id="rStSig"></p>
+                    <button type="button" class="btn big" id="rCall" data-i18n="r_call">Call Mum calmly</button>
+                    <h3 data-i18n="r_tips_t">How to help without panic</h3>
+                    <ul class="plain small">
+                      <li><span class="ic yes" aria-hidden="true">1</span><span data-i18n="r_tip1"></span></li>
+                      <li><span class="ic yes" aria-hidden="true">2</span><span data-i18n="r_tip2"></span></li>
+                      <li><span class="ic yes" aria-hidden="true">3</span><span data-i18n="r_tip3"></span></li>
+                    </ul>
+                    <h3 data-i18n="r_cannot_t">What this page can never show</h3>
+                    <ul class="plain small never">
+                      <li><span class="ic no" aria-hidden="true">✕</span><span data-i18n="r_c1"></span></li>
+                      <li><span class="ic no" aria-hidden="true">✕</span><span data-i18n="r_c2"></span></li>
+                      <li><span class="ic no" aria-hidden="true">✕</span><span data-i18n="r_c3"></span></li>
+                      <li><span class="ic no" aria-hidden="true">✕</span><span data-i18n="r_c4"></span></li>
+                    </ul>
+                    <p class="hint" data-i18n="r_nologin"></p>
+                    <p class="hint" data-i18n="r_st_snapshot"></p>
+                  </div>
+                </div>
+                <button type="button" class="btn quiet" id="rBack" data-i18n="r_back">Back to SMS</button>
+              </div>
+            </section>
+
+            <!-- SCREEN 6: privacy, AI oversight and open data governance -->
+            <section class="screen" id="s6" aria-labelledby="s6h" hidden>
+              <h2 id="s6h" tabindex="-1" data-i18n="pv_t">Privacy and data</h2>
+              <div class="card" id="pvAiCard">
+                <h3 data-i18n="pv_ai_t">Local AI phishing filter</h3>
+                <label class="sw"><input type="checkbox" role="switch" id="swAi"><span data-i18n="pv_ai_sw"></span></label>
+                <p class="small muted" data-i18n="pv_ai_x"></p>
+                <h3 data-i18n="pv_why_t">Last decision explained</h3>
+                <p class="small" id="pvWhy"></p>
+              </div>
+              <div class="card">
+                <h3 data-i18n="pv_ch_t">Your choices</h3>
+                <label class="sw"><input type="checkbox" role="switch" id="swAuto"><span data-i18n="pv_auto_sw"></span></label>
+                <label class="sw"><input type="checkbox" role="switch" id="swSms"><span data-i18n="pv_sms_sw"></span></label>
+              </div>
+              <div class="card">
+                <h3 data-i18n="pv_st_t">What is stored, only on this phone</h3>
+                <ul class="plain small data-list">
+                  <li><span data-i18n="pv_st1"></span></li>
+                  <li><span data-i18n="pv_st2"></span></li>
+                  <li><span data-i18n="pv_st3"></span></li>
+                  <li><span data-i18n="pv_st4"></span></li>
+                </ul>
+              </div>
+              <div class="card" id="pvExport">
+                <h3 data-i18n="pv_ex_t">Open data</h3>
+                <p class="small muted" data-i18n="pv_ex_x"></p>
+                <div class="btn-row">
+                  <button type="button" class="btn secondary" id="exJson" data-i18n="pv_json">Download JSON</button>
+                  <button type="button" class="btn secondary" id="exCsv" data-i18n="pv_csv">Download CSV</button>
+                </div>
+                <p class="small" id="exMsg" role="status"></p>
+              </div>
+              <div class="card" id="pvDelete">
+                <h3 data-i18n="pv_del_t">Delete all my data</h3>
+                <p class="small muted" data-i18n="pv_del_x"></p>
+                <button type="button" class="btn quiet" id="delOpen" data-i18n="pv_del_btn">Delete all my data</button>
+              </div>
+              <button type="button" class="btn quiet" id="pvHome" data-i18n="btn_home">Back to home</button>
+            </section>
+          </div>
+
+          <div class="modal" id="modal" hidden>
+            <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="mdT" aria-describedby="mdX">
+              <h2 id="mdT" data-i18n="md_t">Delete everything?</h2>
+              <p id="mdX" data-i18n="md_x"></p>
+              <div class="btn-row">
+                <button type="button" class="btn secondary" id="mdNo" data-i18n="md_no">Keep my data</button>
+                <button type="button" class="btn danger" id="mdYes" data-i18n="md_yes">Delete everything</button>
+              </div>
+            </div>
+          </div>
+          <div class="toast" id="toast" role="status" hidden></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="panel" aria-labelledby="panelTitle">
+    <h2 id="panelTitle">Live demo control panel</h2>
+    <p class="muted">For the presenter only, not part of the app. Keys 1–6 jump between screens.</p>
+    <h3>Pause length</h3>
+    <div class="pgrid">
+      <button type="button" class="pbtn" id="tFast" aria-pressed="true">Demo: 15 seconds</button>
+      <button type="button" class="pbtn" id="tReal" aria-pressed="false">Real: 15 minutes</button>
+    </div>
+    <h3>Screens</h3>
+    <div class="pgrid" id="screenBtns">
+      <button type="button" class="pbtn" data-go="s1">1 · Onboarding &amp; consent</button>
+      <button type="button" class="pbtn" data-go="s2">2 · Calm home shield</button>
+      <button type="button" class="pbtn" data-go="s3">3 · Scam scenario</button>
+      <button type="button" class="pbtn" data-go="s4">4 · 15-minute pause</button>
+      <button type="button" class="pbtn" data-go="s5">5 · Relative's phone</button>
+      <button type="button" class="pbtn" data-go="s6">6 · Privacy, AI &amp; data</button>
+    </div>
+    <h3>Scenarios (automatic trigger)</h3>
+    <div class="pgrid">
+      <button type="button" class="pbtn wide" data-run="bank">▶ Unknown call + banking app opens</button>
+      <button type="button" class="pbtn wide" data-run="sms">▶ Unknown call + SMS code arrives</button>
+      <button type="button" class="pbtn wide" data-run="known">▶ Trusted contact calls + banking app (no trigger)</button>
+      <button type="button" class="pbtn wide" data-run="manual">▶ Manual backup: "I am being rushed"</button>
+    </div>
+    <h3>Setup</h3>
+    <div class="pgrid">
+      <button type="button" class="pbtn" id="pFill">Fill demo data (code word: Barsik)</button>
+      <button type="button" class="pbtn" id="pReset">Reset demo (delete local data)</button>
+    </div>
+    <h3>Presenter cue</h3>
+    <p class="cue" id="cue"></p>
+    <h3>Clear-box decision log</h3>
+    <ol class="log" id="log"></ol>
+  </aside>
+</main>
+<footer class="page-foot">Code: MIT · Educational content: CC BY-SA 4.0 · Open data: ODC-By 1.0 · Prototype for the KBTU Ethical Digital Design course. All calls, banks and SMS are simulated.</footer>
+
+<noscript><p>This prototype needs JavaScript. All logic runs locally in your browser.</p></noscript>
+
+<script type="application/json" id="i18n">
+{
+"en": {
+ "app_tag": "Digital shield for people 60+",
+ "lang_group": "Language",
+ "fs_group": "Text size",
+ "fs_n_aria": "A, normal text size",
+ "fs_l_aria": "A+, large text",
+ "fs_xl_aria": "A++, extra large text",
+ "banner": "Zero surveillance: no call recording, no chat reading, no bank balances, no location.",
+ "ob_step": "Step {n} of 3",
+ "ob_title1": "Welcome. Qalqan helps you pause when someone rushes you.",
+ "ob_does_t": "What Qalqan does",
+ "ob_does1": "Notices when a stranger is on the phone and, at the same time, your bank app opens or an SMS code arrives.",
+ "ob_does2": "Gives you a calm 15-minute pause and simple tips to recognise a scam.",
+ "ob_does3": "Can send one short SMS to a person you trust, so that they call you.",
+ "ob_never_t": "What Qalqan never does",
+ "ob_never1": "Never records or listens to your calls.",
+ "ob_never2": "Never reads your chats or messengers.",
+ "ob_never3": "Never sees your bank balance or payments.",
+ "ob_never4": "Never tracks where you are.",
+ "ob_never5": "Your family sees only a short status, never your private life.",
+ "btn_next": "Next",
+ "btn_back": "Back",
+ "ob_title2": "Your choices. Nothing is switched on without you.",
+ "ob_c1": "Watch for two signals together on this phone: a call from an unknown number + your bank app or an SMS code.",
+ "ob_c1n": "Needed for the automatic pause. Checked only on this phone, as yes or no.",
+ "ob_c2": "Send one short SMS to my trusted person when a pause starts.",
+ "ob_c2n": "The SMS says only: unknown call + bank app. No numbers, no amounts, no messages.",
+ "ob_c3": "Use the local AI filter to mark suspicious SMS text (optional).",
+ "ob_c3n": "Works offline. Text is checked in memory and is never saved or sent. You can switch it off at any time.",
+ "ob_manual_note": "Without the first choice Qalqan works only by hand: you press “I am being rushed”.",
+ "ob_withdraw": "You can change or withdraw any choice later in “Privacy and data”.",
+ "ob_title3": "Your trusted person and family code word",
+ "ob_name": "Name of your trusted person",
+ "ob_name_ph": "for example, Aigerim (daughter)",
+ "ob_phone": "Their phone number",
+ "ob_phone_n": "They get one welcome SMS, so that they know and can say no.",
+ "ob_code": "Family code word",
+ "ob_code_hint": "Choose a word only you and your family know, for example the name of your first pet. You type it to end a pause early.",
+ "ob_code2": "Repeat the code word",
+ "ob_code_warn": "Nobody will ever ask you for this word by phone: not the bank, not the police, not Qalqan.",
+ "ob_store": "The word is kept only on this phone, in scrambled form.",
+ "ob_finish": "Turn on protection",
+ "err_match": "The two words are different. Please type them again.",
+ "err_req": "Please fill in this field.",
+ "err_short": "Please use at least 3 letters.",
+ "h_title": "Your shield",
+ "h_on": "Protection is on",
+ "h_on_sub": "Qalqan is quietly waiting. It acts only when two signals come together.",
+ "h_manual": "Manual protection",
+ "h_manual_sub": "Press the button below when someone rushes you.",
+ "cb_t": "How Qalqan decides (clear box)",
+ "cb_s1": "① A call from a number that is not in your contacts. Numbers saved less than 24 hours ago also count as unknown.",
+ "cb_s2": "② At the same time, your bank app opens or an SMS code arrives.",
+ "cb_rule": "Only ① and ② together start a pause. One signal alone does nothing.",
+ "cb_ai_on": "Local AI filter: on. It marks scam phrases in SMS but never blocks or deletes anything.",
+ "cb_ai_off": "Local AI filter: off. Only the two-signal rule is used.",
+ "h_trusted": "Trusted person",
+ "h_sms_on": "Gets one short SMS if a pause starts.",
+ "h_sms_off": "SMS to your trusted person: off.",
+ "h_none": "No trusted person added.",
+ "btn_rushed": "I am being rushed — start a pause",
+ "btn_practice": "Practise safely (training)",
+ "btn_privacy": "Privacy and data",
+ "saved": "Saved",
+ "sc_t": "Training: a stranger calls",
+ "sc_intro": "This is a safe simulation. Nobody really calls and nothing is paid.",
+ "call_unknown": "Unknown number",
+ "call_notc": "Not in your contacts",
+ "call_inc": "In your contacts",
+ "call_live": "Call in progress",
+ "call_says": "Caller: “This is the bank security service. Your money is in danger. Open your bank app now and tell no one.”",
+ "bank_app": "MyBank (simulation)",
+ "bank_transfer": "Transfer to another person",
+ "bank_rec_l": "Recipient",
+ "bank_amount_l": "Amount",
+ "sms_from": "SMS · MyBank",
+ "sms_text": "Your confirmation code: 4817. Never share this code.",
+ "ai_note": "AI note: this SMS contains a code. Never tell a code to a caller.",
+ "det_t": "What Qalqan notices (only yes or no)",
+ "det1": "Call from an unknown number",
+ "det2": "Bank app open or SMS code",
+ "yes": "Yes",
+ "no": "No",
+ "wait": "Waiting",
+ "sc_hint": "Choose a training scenario:",
+ "sc_bank": "Simulate: unknown call + opening the bank app",
+ "sc_sms": "Simulate: unknown call + an SMS code arrives",
+ "sc_known": "Simulate: your trusted person calls + bank app",
+ "sc_trig": "Two signals together. The pause starts by itself — you did not have to press anything.",
+ "sc_known_msg": "The caller is in your contacts, so Qalqan stays quiet. No pause, no SMS.",
+ "sc_auto_off": "Automatic watching is off (manual mode). Use the “I am being rushed” button.",
+ "btn_home": "Back to home",
+ "p_t": "Stop and breathe. You are safe right now.",
+ "p_sub": "A real bank will wait 15 minutes. A scammer will not.",
+ "p_left": "Pause time left",
+ "p_in": "Breathe in…",
+ "p_out": "Breathe out…",
+ "p_mt": "Is the person on the phone saying any of this?",
+ "p_m1": "“Tell no one. Do not hang up.”",
+ "p_m2": "“Act right now or you will lose your money.”",
+ "p_m3": "“Tell me the SMS code to save your money.”",
+ "p_m4": "“Move your money to a safe account.”",
+ "p_m5": "“I am from the bank, the police or the National Bank.”",
+ "p_v_scam": "This is exactly how scammers talk. Hang up now. Real banks and the police never ask for SMS codes or for transfers to a “safe account”.",
+ "p_v_none": "Tick what you hear. Even if nothing matches, take your time: you can call your bank yourself using the number on your card.",
+ "p_call": "Call {name}",
+ "p_call_generic": "Call someone I trust",
+ "p_bank": "Call my bank (number on my card)",
+ "p_emerg": "Qalqan never blocks calls. You can call 112 or 102 at any time.",
+ "p_sms_sent": "{name}: one SMS was sent with only this: “{what}”. Nothing else was shared.",
+ "p_sms_off": "No SMS was sent (you switched this off).",
+ "what_bank": "unknown call + bank app open",
+ "what_sms": "unknown call + SMS code",
+ "what_manual": "you pressed “I am being rushed”",
+ "p_exit_t": "I know this caller. End the pause with our family code word",
+ "p_exit_warn": "If someone on the phone tells you what to type here, it is a scam.",
+ "p_exit_label": "Family code word",
+ "p_exit_btn": "End pause",
+ "p_exit_wrong": "This word does not match. That is okay — the pause will end by itself.",
+ "p_exit_ok": "Pause ended with your code word. Take care.",
+ "p_no_code": "No code word is set. The pause will end by itself.",
+ "p_done_t": "The pause is over",
+ "p_done_x": "If you still want to pay someone, first call your bank yourself using the number on your card.",
+ "p_calling": "Calling {name}… (simulation)",
+ "p_calling_bank": "Opening the phone keypad for your bank… (simulation)",
+ "p_min_left": "{m} minutes left",
+ "p_sec_left": "{s} seconds left",
+ "demo_name": "Aigerim (daughter)",
+ "r_banner": "Simulation: this is the phone of {name}",
+ "r_mum": "Mum",
+ "r_welcome": "Qalqan-60+: Mum added you as her trusted person. You will get a short SMS only if a stranger calls her while her bank app is open. Reply STOP to say no.",
+ "r_sms_cb": "Qalqan-60+: Mum has a call from an unknown number and {sig} (since {time}). Please call her calmly. Status: {link}",
+ "r_sms_manual": "Qalqan-60+: Mum pressed “I am being rushed” at {time}. Please call her calmly. Status: {link}",
+ "sig2_bank": "her bank app is open",
+ "sig2_sms": "she has received an SMS code",
+ "r_none": "No alert yet. Start a scenario first.",
+ "r_st_t": "Qalqan-60+ status",
+ "r_st_active": "A calm pause was started on Mum's phone.",
+ "r_st_since": "Started at {time} · {min} min ago. A pause lasts at most 15 minutes.",
+ "r_st_sig": "Signals: unknown caller + {sig}.",
+ "r_st_sig_manual": "Signal: Mum pressed “I am being rushed”.",
+ "r_call": "Call Mum calmly",
+ "r_tips_t": "How to help without panic",
+ "r_tip1": "Speak slowly and kindly. Do not blame.",
+ "r_tip2": "Ask: “Is someone on the other line asking for a code or money?”",
+ "r_tip3": "Suggest hanging up and calling the bank together using the number on the card.",
+ "r_cannot_t": "What this page can never show (by design)",
+ "r_c1": "Bank balance or payments",
+ "r_c2": "Messages and chats",
+ "r_c3": "Call history or the caller's number",
+ "r_c4": "Location",
+ "r_nologin": "No app and no login. The status is written inside the link itself (after #), so our server never receives it.",
+ "r_st_snapshot": "This page is a snapshot from the SMS. It cannot watch what happens next.",
+ "r_back": "Back to SMS",
+ "pv_t": "Privacy and data",
+ "pv_ai_t": "Local AI phishing filter",
+ "pv_ai_sw": "Use the local AI filter",
+ "pv_ai_x": "When on, a small model on this phone looks for scam phrases in new SMS (such as “safe account” or “tell me the code”) and adds a gentle note. It never blocks, deletes or sends anything. When off, only the two-signal rule works.",
+ "pv_why_t": "Last decision explained",
+ "pv_why_none": "No decisions yet.",
+ "why_trig": "{time}: pause started because ① unknown caller = yes and ② {sig} = yes.",
+ "why_known": "{time}: no pause, because ① the caller is in your contacts.",
+ "why_auto_off": "{time}: no pause, because automatic watching is off.",
+ "why_manual": "{time}: pause started by you (button).",
+ "why_ai": " The AI filter marked the SMS phrase “{phrase}”.",
+ "sig_bank": "bank app open",
+ "sig_sms": "SMS code received",
+ "pv_ch_t": "Your choices",
+ "pv_auto_sw": "Automatic two-signal watching",
+ "pv_sms_sw": "SMS to my trusted person",
+ "pv_st_t": "What is stored, only on this phone",
+ "pv_st1": "Trusted person's name and number — until you delete them.",
+ "pv_st2": "Family code word — scrambled, it cannot be read back.",
+ "pv_st3": "Language and text size.",
+ "pv_st4": "Number of pauses per week (no times, no numbers) — 90 days.",
+ "pv_ex_t": "Open data: help others learn about scams",
+ "pv_ex_x": "Download anonymous statistics: scam types and number of pauses per week. No names, numbers, times or messages. Licence: ODC-By 1.0.",
+ "pv_json": "Download JSON",
+ "pv_csv": "Download CSV",
+ "pv_saved": "File saved: {file}",
+ "pv_del_t": "Delete all my data",
+ "pv_del_x": "Removes your trusted person, code word, settings and counters from this phone. Qalqan keeps no copy anywhere else.",
+ "pv_del_btn": "Delete all my data",
+ "md_t": "Delete everything?",
+ "md_x": "This cannot be undone. Protection stops until you set Qalqan up again.",
+ "md_yes": "Delete everything",
+ "md_no": "Keep my data",
+ "md_done": "All your data has been deleted from this phone."
+},
+"ru": {
+ "app_tag": "Цифровой щит для людей 60+",
+ "lang_group": "Язык",
+ "fs_group": "Размер текста",
+ "fs_n_aria": "A, обычный размер текста",
+ "fs_l_aria": "A+, крупный текст",
+ "fs_xl_aria": "A++, очень крупный текст",
+ "banner": "Без слежки: не записываем звонки, не читаем переписку, не видим баланс и местоположение.",
+ "ob_step": "Шаг {n} из 3",
+ "ob_title1": "Здравствуйте. Qalqan помогает сделать паузу, когда вас торопят.",
+ "ob_does_t": "Что делает Qalqan",
+ "ob_does1": "Замечает, когда вам звонит незнакомый номер и в это же время открывается банковское приложение или приходит SMS-код.",
+ "ob_does2": "Даёт спокойную 15-минутную паузу и простые подсказки, как узнать мошенника.",
+ "ob_does3": "Может отправить одно короткое SMS близкому человеку, чтобы он вам перезвонил.",
+ "ob_never_t": "Чего Qalqan никогда не делает",
+ "ob_never1": "Не записывает и не слушает ваши звонки.",
+ "ob_never2": "Не читает переписку и мессенджеры.",
+ "ob_never3": "Не видит баланс и платежи.",
+ "ob_never4": "Не отслеживает, где вы находитесь.",
+ "ob_never5": "Близкие видят только короткий статус, а не вашу личную жизнь.",
+ "btn_next": "Далее",
+ "btn_back": "Назад",
+ "ob_title2": "Ваш выбор. Без вас ничего не включается.",
+ "ob_c1": "Следить за двумя сигналами одновременно на этом телефоне: звонок с незнакомого номера + банковское приложение или SMS-код.",
+ "ob_c1n": "Нужно для автоматической паузы. Проверяется только на этом телефоне, в виде «да» или «нет».",
+ "ob_c2": "Отправлять одно короткое SMS моему близкому человеку, когда начинается пауза.",
+ "ob_c2n": "В SMS только: незнакомый звонок + банковское приложение. Без номеров, сумм и сообщений.",
+ "ob_c3": "Использовать локальный ИИ-фильтр, чтобы отмечать подозрительные SMS (по желанию).",
+ "ob_c3n": "Работает без интернета. Текст проверяется в памяти, не сохраняется и не отправляется. Можно выключить в любой момент.",
+ "ob_manual_note": "Без первого пункта Qalqan работает только вручную: вы нажимаете «Меня торопят».",
+ "ob_withdraw": "Любой выбор можно изменить или отозвать позже в разделе «Приватность и данные».",
+ "ob_title3": "Близкий человек и семейное кодовое слово",
+ "ob_name": "Имя близкого человека",
+ "ob_name_ph": "например, Айгерим (дочь)",
+ "ob_phone": "Номер его телефона",
+ "ob_phone_n": "Он получит одно приветственное SMS, чтобы знать об этом и иметь возможность отказаться.",
+ "ob_code": "Семейное кодовое слово",
+ "ob_code_hint": "Выберите слово, которое знаете только вы и ваша семья, например кличку первого питомца. Его нужно ввести, чтобы закончить паузу раньше.",
+ "ob_code2": "Повторите кодовое слово",
+ "ob_code_warn": "Никто никогда не спросит это слово по телефону: ни банк, ни полиция, ни Qalqan.",
+ "ob_store": "Слово хранится только на этом телефоне в зашифрованном виде.",
+ "ob_finish": "Включить защиту",
+ "err_match": "Слова не совпадают. Введите их ещё раз.",
+ "err_req": "Пожалуйста, заполните это поле.",
+ "err_short": "Пожалуйста, не меньше 3 букв.",
+ "h_title": "Ваш щит",
+ "h_on": "Защита включена",
+ "h_on_sub": "Qalqan спокойно ждёт. Он срабатывает, только когда совпадают два сигнала.",
+ "h_manual": "Ручная защита",
+ "h_manual_sub": "Нажмите кнопку ниже, если вас торопят.",
+ "cb_t": "Как Qalqan принимает решение (открытая логика)",
+ "cb_s1": "① Звонок с номера, которого нет в ваших контактах. Номера, сохранённые менее 24 часов назад, тоже считаются незнакомыми.",
+ "cb_s2": "② В это же время открывается банковское приложение или приходит SMS-код.",
+ "cb_rule": "Паузу запускают только ① и ② вместе. Один сигнал ничего не делает.",
+ "cb_ai_on": "Локальный ИИ-фильтр: включён. Он отмечает фразы мошенников в SMS, но ничего не блокирует и не удаляет.",
+ "cb_ai_off": "Локальный ИИ-фильтр: выключен. Работает только правило двух сигналов.",
+ "h_trusted": "Близкий человек",
+ "h_sms_on": "Получит одно короткое SMS, если начнётся пауза.",
+ "h_sms_off": "SMS близкому человеку: выключено.",
+ "h_none": "Близкий человек не добавлен.",
+ "btn_rushed": "Меня торопят — начать паузу",
+ "btn_practice": "Безопасная тренировка",
+ "btn_privacy": "Приватность и данные",
+ "saved": "Сохранено",
+ "sc_t": "Тренировка: звонит незнакомец",
+ "sc_intro": "Это безопасная симуляция. На самом деле никто не звонит и ничего не оплачивается.",
+ "call_unknown": "Неизвестный номер",
+ "call_notc": "Нет в ваших контактах",
+ "call_inc": "Есть в ваших контактах",
+ "call_live": "Идёт разговор",
+ "call_says": "Звонящий: «Это служба безопасности банка. Ваши деньги в опасности. Срочно откройте банковское приложение и никому не говорите».",
+ "bank_app": "МойБанк (симуляция)",
+ "bank_transfer": "Перевод другому человеку",
+ "bank_rec_l": "Получатель",
+ "bank_amount_l": "Сумма",
+ "sms_from": "SMS · МойБанк",
+ "sms_text": "Ваш код подтверждения: 4817. Никому не сообщайте этот код.",
+ "ai_note": "Заметка ИИ: в этом SMS есть код. Никогда не сообщайте код звонящему.",
+ "det_t": "Что замечает Qalqan (только да или нет)",
+ "det1": "Звонок с незнакомого номера",
+ "det2": "Банковское приложение или SMS-код",
+ "yes": "Да",
+ "no": "Нет",
+ "wait": "Ожидание",
+ "sc_hint": "Выберите тренировку:",
+ "sc_bank": "Симуляция: незнакомый звонок + открытие банковского приложения",
+ "sc_sms": "Симуляция: незнакомый звонок + приходит SMS-код",
+ "sc_known": "Симуляция: звонит близкий человек + банковское приложение",
+ "sc_trig": "Два сигнала совпали. Пауза начинается сама — вам ничего не нужно нажимать.",
+ "sc_known_msg": "Звонящий есть в ваших контактах, поэтому Qalqan молчит. Ни паузы, ни SMS.",
+ "sc_auto_off": "Автоматическое отслеживание выключено (ручной режим). Используйте кнопку «Меня торопят».",
+ "btn_home": "На главную",
+ "p_t": "Остановитесь и подышите. Сейчас вы в безопасности.",
+ "p_sub": "Настоящий банк подождёт 15 минут. Мошенник — нет.",
+ "p_left": "До конца паузы",
+ "p_in": "Вдох…",
+ "p_out": "Выдох…",
+ "p_mt": "Говорит ли человек по телефону что-то из этого?",
+ "p_m1": "«Никому не говорите. Не кладите трубку».",
+ "p_m2": "«Действуйте немедленно, иначе потеряете деньги».",
+ "p_m3": "«Продиктуйте код из SMS, чтобы спасти деньги».",
+ "p_m4": "«Переведите деньги на безопасный счёт».",
+ "p_m5": "«Я из банка, полиции или Национального банка».",
+ "p_v_scam": "Именно так говорят мошенники. Положите трубку. Настоящий банк и полиция никогда не просят SMS-коды и переводы на «безопасный счёт».",
+ "p_v_none": "Отметьте то, что слышите. Даже если ничего не совпадает, не спешите: вы можете сами позвонить в банк по номеру на карте.",
+ "p_call": "Позвонить: {name}",
+ "p_call_generic": "Позвонить близкому человеку",
+ "p_bank": "Позвонить в банк (номер на карте)",
+ "p_emerg": "Qalqan никогда не блокирует звонки. Вы можете в любой момент позвонить 112 или 102.",
+ "p_sms_sent": "{name}: отправлено одно SMS только с этим: «{what}». Больше ничего не передано.",
+ "p_sms_off": "SMS не отправлялось (вы это выключили).",
+ "what_bank": "незнакомый звонок + открыто банковское приложение",
+ "what_sms": "незнакомый звонок + SMS-код",
+ "what_manual": "вы нажали «Меня торопят»",
+ "p_exit_t": "Я знаю этого человека. Закончить паузу семейным кодовым словом",
+ "p_exit_warn": "Если кто-то по телефону говорит, что здесь ввести, — это мошенник.",
+ "p_exit_label": "Семейное кодовое слово",
+ "p_exit_btn": "Закончить паузу",
+ "p_exit_wrong": "Слово не совпадает. Ничего страшного — пауза закончится сама.",
+ "p_exit_ok": "Пауза завершена вашим кодовым словом. Берегите себя.",
+ "p_no_code": "Кодовое слово не задано. Пауза закончится сама.",
+ "p_done_t": "Пауза закончилась",
+ "p_done_x": "Если вы всё ещё хотите кому-то заплатить, сначала сами позвоните в банк по номеру на карте.",
+ "p_calling": "Звоним: {name}… (симуляция)",
+ "p_calling_bank": "Открываем набор номера банка… (симуляция)",
+ "p_min_left": "Осталось минут: {m}",
+ "p_sec_left": "Осталось секунд: {s}",
+ "demo_name": "Айгерим (дочь)",
+ "r_banner": "Симуляция: это телефон — {name}",
+ "r_mum": "Мама",
+ "r_welcome": "Qalqan-60+: мама добавила вас как близкого человека. Вы получите короткое SMS, только если ей позвонит незнакомец, пока открыто банковское приложение. Ответьте STOP, чтобы отказаться.",
+ "r_sms_cb": "Qalqan-60+: маме звонят с незнакомого номера, и {sig} (с {time}). Пожалуйста, позвоните ей спокойно. Статус: {link}",
+ "r_sms_manual": "Qalqan-60+: мама нажала «Меня торопят» в {time}. Пожалуйста, позвоните ей спокойно. Статус: {link}",
+ "sig2_bank": "у неё открыто банковское приложение",
+ "sig2_sms": "ей пришёл SMS-код",
+ "r_none": "Оповещений пока нет. Сначала запустите сценарий.",
+ "r_st_t": "Статус Qalqan-60+",
+ "r_st_active": "На телефоне мамы началась спокойная пауза.",
+ "r_st_since": "Началась в {time} · {min} мин назад. Пауза длится не больше 15 минут.",
+ "r_st_sig": "Сигналы: незнакомый номер + {sig}.",
+ "r_st_sig_manual": "Сигнал: мама нажала «Меня торопят».",
+ "r_call": "Спокойно позвонить маме",
+ "r_tips_t": "Как помочь без паники",
+ "r_tip1": "Говорите медленно и мягко. Не ругайте.",
+ "r_tip2": "Спросите: «Кто-то по другой линии просит код или деньги?»",
+ "r_tip3": "Предложите положить трубку и вместе позвонить в банк по номеру на карте.",
+ "r_cannot_t": "Чего эта страница никогда не покажет (так задумано)",
+ "r_c1": "Баланс и платежи",
+ "r_c2": "Сообщения и переписку",
+ "r_c3": "Историю звонков и номер звонящего",
+ "r_c4": "Местоположение",
+ "r_nologin": "Без приложения и входа. Статус записан в самой ссылке (после #), поэтому наш сервер его не получает.",
+ "r_st_snapshot": "Эта страница — снимок из SMS. Она не следит за тем, что происходит дальше.",
+ "r_back": "Назад к SMS",
+ "pv_t": "Приватность и данные",
+ "pv_ai_t": "Локальный ИИ-фильтр мошеннических SMS",
+ "pv_ai_sw": "Использовать локальный ИИ-фильтр",
+ "pv_ai_x": "Когда включён, небольшая модель на этом телефоне ищет фразы мошенников в новых SMS (например, «безопасный счёт» или «назовите код») и добавляет мягкую заметку. Она ничего не блокирует, не удаляет и не отправляет. Когда выключен, работает только правило двух сигналов.",
+ "pv_why_t": "Объяснение последнего решения",
+ "pv_why_none": "Решений пока нет.",
+ "why_trig": "{time}: пауза началась, потому что ① незнакомый номер = да и ② {sig} = да.",
+ "why_known": "{time}: паузы нет, потому что ① звонящий есть в контактах.",
+ "why_auto_off": "{time}: паузы нет, потому что автоматическое отслеживание выключено.",
+ "why_manual": "{time}: паузу начали вы (кнопкой).",
+ "why_ai": " ИИ-фильтр отметил фразу в SMS: «{phrase}».",
+ "sig_bank": "банковское приложение открыто",
+ "sig_sms": "получен SMS-код",
+ "pv_ch_t": "Ваш выбор",
+ "pv_auto_sw": "Автоматическое отслеживание двух сигналов",
+ "pv_sms_sw": "SMS близкому человеку",
+ "pv_st_t": "Что хранится — только на этом телефоне",
+ "pv_st1": "Имя и номер близкого человека — пока вы их не удалите.",
+ "pv_st2": "Кодовое слово — в зашифрованном виде, прочитать его нельзя.",
+ "pv_st3": "Язык и размер текста.",
+ "pv_st4": "Число пауз по неделям (без времени и номеров) — 90 дней.",
+ "pv_ex_t": "Открытые данные: помогите другим узнать о мошенничестве",
+ "pv_ex_x": "Скачайте анонимную статистику: типы мошенничества и число пауз по неделям. Без имён, номеров, времени и сообщений. Лицензия: ODC-By 1.0.",
+ "pv_json": "Скачать JSON",
+ "pv_csv": "Скачать CSV",
+ "pv_saved": "Файл сохранён: {file}",
+ "pv_del_t": "Удалить все мои данные",
+ "pv_del_x": "Удаляет близкого человека, кодовое слово, настройки и счётчики с этого телефона. У Qalqan нет копий где-либо ещё.",
+ "pv_del_btn": "Удалить все мои данные",
+ "md_t": "Удалить всё?",
+ "md_x": "Это нельзя отменить. Защита остановится, пока вы снова не настроите Qalqan.",
+ "md_yes": "Удалить всё",
+ "md_no": "Оставить данные",
+ "md_done": "Все ваши данные удалены с этого телефона."
+},
+"kk": {
+ "app_tag": "60+ жастағыларға арналған цифрлық қалқан",
+ "lang_group": "Тіл",
+ "fs_group": "Мәтін өлшемі",
+ "fs_n_aria": "A, қалыпты мәтін өлшемі",
+ "fs_l_aria": "A+, үлкен мәтін",
+ "fs_xl_aria": "A++, өте үлкен мәтін",
+ "banner": "Бақылаусыз: қоңырауларды жазбаймыз, хаттарды оқымаймыз, банктегі қаражат пен орналасқан жерді көрмейміз.",
+ "ob_step": "{n}-қадам (барлығы 3)",
+ "ob_title1": "Қош келдіңіз. Біреу сізді асықтырғанда, Qalqan үзіліс жасауға көмектеседі.",
+ "ob_does_t": "Qalqan не істейді",
+ "ob_does1": "Бейтаныс нөмір қоңырау шалып тұрғанда банк қосымшасы ашылса немесе SMS-код келсе, соны байқайды.",
+ "ob_does2": "Сабырлы 15 минуттық үзіліс береді және алаяқты қалай тануға болатынын қарапайым тілмен айтады.",
+ "ob_does3": "Сенімді адамыңызға бір қысқа SMS жібере алады, ол сізге қоңырау шалады.",
+ "ob_never_t": "Qalqan ешқашан не істемейді",
+ "ob_never1": "Қоңырауларыңызды жазбайды және тыңдамайды.",
+ "ob_never2": "Хаттарыңыз бен мессенджерлеріңізді оқымайды.",
+ "ob_never3": "Банктегі қаражатыңыз бен төлемдеріңізді көрмейді.",
+ "ob_never4": "Қай жерде екеніңізді бақыламайды.",
+ "ob_never5": "Жақындарыңыз тек қысқа күйді көреді, жеке өміріңізді емес.",
+ "btn_next": "Әрі қарай",
+ "btn_back": "Артқа",
+ "ob_title2": "Сіздің таңдауыңыз. Сізсіз ештеңе қосылмайды.",
+ "ob_c1": "Осы телефонда екі белгіні бірге қадағалау: бейтаныс нөмірден қоңырау + банк қосымшасы немесе SMS-код.",
+ "ob_c1n": "Автоматты үзіліс үшін қажет. Тек осы телефонда «иә» немесе «жоқ» түрінде тексеріледі.",
+ "ob_c2": "Үзіліс басталғанда сенімді адамыма бір қысқа SMS жіберу.",
+ "ob_c2n": "SMS-те тек: бейтаныс қоңырау + банк қосымшасы. Нөмір, сома және хабарлама жоқ.",
+ "ob_c3": "Күдікті SMS мәтінін белгілеу үшін жергілікті ЖИ-сүзгіні қолдану (қалауыңызша).",
+ "ob_c3n": "Интернетсіз жұмыс істейді. Мәтін жадта тексеріледі, сақталмайды және жіберілмейді. Кез келген уақытта өшіруге болады.",
+ "ob_manual_note": "Бірінші тармақсыз Qalqan тек қолмен жұмыс істейді: сіз «Мені асықтырып жатыр» батырмасын басасыз.",
+ "ob_withdraw": "Кез келген таңдауды кейін «Құпиялылық және деректер» бөлімінде өзгертуге не қайтарып алуға болады.",
+ "ob_title3": "Сенімді адам және отбасылық кодтық сөз",
+ "ob_name": "Сенімді адамның аты",
+ "ob_name_ph": "мысалы, Айгерім (қызым)",
+ "ob_phone": "Оның телефон нөмірі",
+ "ob_phone_n": "Ол білуі және бас тарта алуы үшін бір сәлемдесу SMS-ін алады.",
+ "ob_code": "Отбасылық кодтық сөз",
+ "ob_code_hint": "Тек сіз бен отбасыңыз білетін сөзді таңдаңыз, мысалы, алғашқы үй жануарыңыздың атын. Үзілісті ертерек аяқтау үшін соны тересіз.",
+ "ob_code2": "Кодтық сөзді қайталаңыз",
+ "ob_code_warn": "Бұл сөзді сізден ешкім телефонмен сұрамайды: банк те, полиция да, Qalqan да.",
+ "ob_store": "Сөз тек осы телефонда шифрланған түрде сақталады.",
+ "ob_finish": "Қорғанысты қосу",
+ "err_match": "Екі сөз сәйкес келмейді. Қайта теріңіз.",
+ "err_req": "Бұл өрісті толтырыңыз.",
+ "err_short": "Кемінде 3 әріп теріңіз.",
+ "h_title": "Сіздің қалқаныңыз",
+ "h_on": "Қорғаныс қосулы",
+ "h_on_sub": "Qalqan тыныш күтіп тұр. Ол екі белгі бір уақытта болғанда ғана іске қосылады.",
+ "h_manual": "Қолмен қорғаныс",
+ "h_manual_sub": "Біреу асықтырса, төмендегі батырманы басыңыз.",
+ "cb_t": "Qalqan қалай шешеді (ашық логика)",
+ "cb_s1": "① Контактілеріңізде жоқ нөмірден қоңырау. 24 сағаттан аз бұрын сақталған нөмірлер де бейтаныс болып саналады.",
+ "cb_s2": "② Дәл сол уақытта банк қосымшасы ашылады немесе SMS-код келеді.",
+ "cb_rule": "Үзілісті тек ① мен ② бірге бастайды. Бір ғана белгі болса, ештеңе болмайды.",
+ "cb_ai_on": "Жергілікті ЖИ-сүзгі: қосулы. Ол SMS-тегі алаяқ сөздерін белгілейді, бірақ ештеңені бұғаттамайды және өшірмейді.",
+ "cb_ai_off": "Жергілікті ЖИ-сүзгі: өшірулі. Тек екі белгі ережесі жұмыс істейді.",
+ "h_trusted": "Сенімді адам",
+ "h_sms_on": "Үзіліс басталса, бір қысқа SMS алады.",
+ "h_sms_off": "Сенімді адамға SMS: өшірулі.",
+ "h_none": "Сенімді адам қосылмаған.",
+ "btn_rushed": "Мені асықтырып жатыр — үзіліс бастау",
+ "btn_practice": "Қауіпсіз жаттығу",
+ "btn_privacy": "Құпиялылық және деректер",
+ "saved": "Сақталды",
+ "sc_t": "Жаттығу: бейтаныс адам қоңырау шалады",
+ "sc_intro": "Бұл қауіпсіз симуляция. Шын мәнінде ешкім қоңырау шалмайды және ештеңе төленбейді.",
+ "call_unknown": "Белгісіз нөмір",
+ "call_notc": "Контактілеріңізде жоқ",
+ "call_inc": "Контактілеріңізде бар",
+ "call_live": "Сөйлесу жүріп жатыр",
+ "call_says": "Қоңырау шалушы: «Бұл банктің қауіпсіздік қызметі. Ақшаңызға қауіп төніп тұр. Банк қосымшасын қазір ашыңыз және ешкімге айтпаңыз».",
+ "bank_app": "Менің банкім (симуляция)",
+ "bank_transfer": "Басқа адамға аударым",
+ "bank_rec_l": "Алушы",
+ "bank_amount_l": "Сома",
+ "sms_from": "SMS · Менің банкім",
+ "sms_text": "Растау кодыңыз: 4817. Бұл кодты ешкімге айтпаңыз.",
+ "ai_note": "ЖИ ескертпесі: бұл SMS-те код бар. Кодты қоңырау шалушыға ешқашан айтпаңыз.",
+ "det_t": "Qalqan не байқайды (тек иә немесе жоқ)",
+ "det1": "Бейтаныс нөмірден қоңырау",
+ "det2": "Банк қосымшасы немесе SMS-код",
+ "yes": "Иә",
+ "no": "Жоқ",
+ "wait": "Күтуде",
+ "sc_hint": "Жаттығуды таңдаңыз:",
+ "sc_bank": "Симуляция: бейтаныс қоңырау + банк қосымшасын ашу",
+ "sc_sms": "Симуляция: бейтаныс қоңырау + SMS-код келеді",
+ "sc_known": "Симуляция: сенімді адамыңыз қоңырау шалады + банк қосымшасы",
+ "sc_trig": "Екі белгі сәйкес келді. Үзіліс өзі басталады — сізге ештеңе басудың қажеті жоқ.",
+ "sc_known_msg": "Қоңырау шалушы контактілеріңізде бар, сондықтан Qalqan үнсіз. Үзіліс те, SMS те жоқ.",
+ "sc_auto_off": "Автоматты қадағалау өшірулі (қолмен режим). «Мені асықтырып жатыр» батырмасын қолданыңыз.",
+ "btn_home": "Басты бетке",
+ "p_t": "Тоқтаңыз да, терең дем алыңыз. Қазір сіз қауіпсіздесіз.",
+ "p_sub": "Нағыз банк 15 минут күтеді. Алаяқ күтпейді.",
+ "p_left": "Үзілістің аяқталуына дейін",
+ "p_in": "Дем алыңыз…",
+ "p_out": "Дем шығарыңыз…",
+ "p_mt": "Телефондағы адам осылардың бірін айтып жатыр ма?",
+ "p_m1": "«Ешкімге айтпаңыз. Тұтқаны қоймаңыз».",
+ "p_m2": "«Дәл қазір әрекет етіңіз, әйтпесе ақшаңыздан айырыласыз».",
+ "p_m3": "«Ақшаңызды сақтау үшін SMS-кодты айтыңыз».",
+ "p_m4": "«Ақшаңызды қауіпсіз шотқа аударыңыз».",
+ "p_m5": "«Мен банктен, полициядан немесе Ұлттық банктен хабарласып тұрмын».",
+ "p_v_scam": "Алаяқтар дәл осылай сөйлейді. Тұтқаны қазір қойыңыз. Нағыз банк пен полиция ешқашан SMS-код немесе «қауіпсіз шотқа» аударым сұрамайды.",
+ "p_v_none": "Естігеніңізді белгілеңіз. Ештеңе сәйкес келмесе де, асықпаңыз: банкке картадағы нөмір бойынша өзіңіз қоңырау шала аласыз.",
+ "p_call": "Қоңырау шалу: {name}",
+ "p_call_generic": "Сенімді адамға қоңырау шалу",
+ "p_bank": "Банкке қоңырау (картадағы нөмір)",
+ "p_emerg": "Qalqan ешқашан қоңырауларды бұғаттамайды. Кез келген уақытта 112 немесе 102 нөміріне қоңырау шала аласыз.",
+ "p_sms_sent": "{name}: тек мынадан тұратын бір SMS жіберілді: «{what}». Басқа ештеңе берілмеді.",
+ "p_sms_off": "SMS жіберілмеді (сіз мұны өшірдіңіз).",
+ "what_bank": "бейтаныс қоңырау + банк қосымшасы ашық",
+ "what_sms": "бейтаныс қоңырау + SMS-код",
+ "what_manual": "сіз «Мені асықтырып жатыр» батырмасын бастыңыз",
+ "p_exit_t": "Мен бұл адамды танимын. Үзілісті отбасылық кодтық сөзбен аяқтау",
+ "p_exit_warn": "Егер телефондағы біреу мұнда не теру керектігін айтса, бұл — алаяқ.",
+ "p_exit_label": "Отбасылық кодтық сөз",
+ "p_exit_btn": "Үзілісті аяқтау",
+ "p_exit_wrong": "Сөз сәйкес келмейді. Оқасы жоқ — үзіліс өзі аяқталады.",
+ "p_exit_ok": "Үзіліс кодтық сөзіңізбен аяқталды. Өзіңізді күтіңіз.",
+ "p_no_code": "Кодтық сөз орнатылмаған. Үзіліс өзі аяқталады.",
+ "p_done_t": "Үзіліс аяқталды",
+ "p_done_x": "Егер әлі де біреуге төлегіңіз келсе, алдымен картадағы нөмір бойынша банкке өзіңіз қоңырау шалыңыз.",
+ "p_calling": "Қоңырау шалынуда: {name}… (симуляция)",
+ "p_calling_bank": "Банк нөмірін теру ашылуда… (симуляция)",
+ "p_min_left": "{m} минут қалды",
+ "p_sec_left": "{s} секунд қалды",
+ "demo_name": "Айгерім (қызым)",
+ "r_banner": "Симуляция: бұл — {name} телефоны",
+ "r_mum": "Анам",
+ "r_welcome": "Qalqan-60+: анаңыз сізді сенімді адамы ретінде қосты. Бейтаныс адам банк қосымшасы ашық тұрғанда қоңырау шалса ғана, сізге қысқа SMS келеді. Бас тарту үшін STOP деп жауап беріңіз.",
+ "r_sms_cb": "Qalqan-60+: анаңызға бейтаныс нөмірден қоңырау түсті және {sig} ({time} бастап). Оған сабырмен қоңырау шалыңыз. Күйі: {link}",
+ "r_sms_manual": "Qalqan-60+: анаңыз {time}-де «Мені асықтырып жатыр» батырмасын басты. Оған сабырмен қоңырау шалыңыз. Күйі: {link}",
+ "sig2_bank": "оның банк қосымшасы ашық",
+ "sig2_sms": "оған SMS-код келді",
+ "r_none": "Әзірге хабарлама жоқ. Алдымен сценарийді бастаңыз.",
+ "r_st_t": "Qalqan-60+ күйі",
+ "r_st_active": "Анаңыздың телефонында сабырлы үзіліс басталды.",
+ "r_st_since": "{time}-де басталды · {min} мин бұрын. Үзіліс 15 минуттан аспайды.",
+ "r_st_sig": "Белгілер: бейтаныс нөмір + {sig}.",
+ "r_st_sig_manual": "Белгі: анаңыз «Мені асықтырып жатыр» батырмасын басты.",
+ "r_call": "Анама сабырмен қоңырау шалу",
+ "r_tips_t": "Үрейсіз қалай көмектесуге болады",
+ "r_tip1": "Баяу әрі жылы сөйлеңіз. Кінәламаңыз.",
+ "r_tip2": "Сұраңыз: «Басқа желіде біреу код немесе ақша сұрап жатыр ма?»",
+ "r_tip3": "Тұтқаны қойып, банкке картадағы нөмір бойынша бірге қоңырау шалуды ұсыныңыз.",
+ "r_cannot_t": "Бұл бет ешқашан не көрсетпейді (әдейі солай жасалған)",
+ "r_c1": "Банктегі қаражат пен төлемдер",
+ "r_c2": "Хабарламалар мен хат-хабар",
+ "r_c3": "Қоңыраулар тарихы мен қоңырау шалушының нөмірі",
+ "r_c4": "Орналасқан жер",
+ "r_nologin": "Қосымша да, кіру де қажет емес. Күй сілтеменің өзінде (# белгісінен кейін) жазылған, сондықтан біздің сервер оны алмайды.",
+ "r_st_snapshot": "Бұл бет — SMS-тегі сәттік көрініс. Ол әрі қарай не болатынын бақыламайды.",
+ "r_back": "SMS-ке оралу",
+ "pv_t": "Құпиялылық және деректер",
+ "pv_ai_t": "Алаяқ SMS-терге арналған жергілікті ЖИ-сүзгі",
+ "pv_ai_sw": "Жергілікті ЖИ-сүзгіні қолдану",
+ "pv_ai_x": "Қосулы кезде осы телефондағы шағын модель жаңа SMS-терден алаяқ сөздерін іздейді (мысалы, «қауіпсіз шот» немесе «кодты айтыңыз») және жұмсақ ескертпе қосады. Ол ештеңені бұғаттамайды, өшірмейді және жібермейді. Өшірулі кезде тек екі белгі ережесі жұмыс істейді.",
+ "pv_why_t": "Соңғы шешімнің түсіндірмесі",
+ "pv_why_none": "Әзірге шешім жоқ.",
+ "why_trig": "{time}: үзіліс басталды, себебі ① бейтаныс нөмір = иә және ② {sig} = иә.",
+ "why_known": "{time}: үзіліс жоқ, себебі ① қоңырау шалушы контактілеріңізде бар.",
+ "why_auto_off": "{time}: үзіліс жоқ, себебі автоматты қадағалау өшірулі.",
+ "why_manual": "{time}: үзілісті өзіңіз бастадыңыз (батырмамен).",
+ "why_ai": " ЖИ-сүзгі SMS-тегі «{phrase}» сөзін белгіледі.",
+ "sig_bank": "банк қосымшасы ашық",
+ "sig_sms": "SMS-код келді",
+ "pv_ch_t": "Сіздің таңдауыңыз",
+ "pv_auto_sw": "Екі белгіні автоматты қадағалау",
+ "pv_sms_sw": "Сенімді адамыма SMS",
+ "pv_st_t": "Не сақталады — тек осы телефонда",
+ "pv_st1": "Сенімді адамның аты мен нөмірі — өзіңіз өшіргенше.",
+ "pv_st2": "Кодтық сөз — шифрланған, оны қайта оқу мүмкін емес.",
+ "pv_st3": "Тіл және мәтін өлшемі.",
+ "pv_st4": "Апта бойынша үзілістер саны (уақытсыз, нөмірсіз) — 90 күн.",
+ "pv_ex_t": "Ашық деректер: басқаларға алаяқтық туралы білуге көмектесіңіз",
+ "pv_ex_x": "Анонимді статистиканы жүктеп алыңыз: алаяқтық түрлері және апта бойынша үзілістер саны. Аттар, нөмірлер, уақыт және хабарламалар жоқ. Лицензия: ODC-By 1.0.",
+ "pv_json": "JSON жүктеу",
+ "pv_csv": "CSV жүктеу",
+ "pv_saved": "Файл сақталды: {file}",
+ "pv_del_t": "Барлық деректерімді өшіру",
+ "pv_del_x": "Сенімді адамды, кодтық сөзді, баптаулар мен есептегіштерді осы телефоннан өшіреді. Qalqan басқа жерде көшірме сақтамайды.",
+ "pv_del_btn": "Барлық деректерімді өшіру",
+ "md_t": "Барлығын өшіру керек пе?",
+ "md_x": "Мұны қайтару мүмкін емес. Qalqan-ды қайта баптағанша қорғаныс тоқтайды.",
+ "md_yes": "Барлығын өшіру",
+ "md_no": "Деректерді сақтау",
+ "md_done": "Барлық деректеріңіз осы телефоннан өшірілді."
+}
+}
+</script>
+<script type="application/json" id="dataset">
+{
+  "name": "Qalqan-60+ open scam-script taxonomy (non-PII)",
+  "version": "1.0.0",
+  "updated": "2026-11",
+  "license": "ODC-By-1.0",
+  "license_url": "https://opendatacommons.org/licenses/by/1-0/",
+  "attribution": "Qalqan-60+ contributors",
+  "languages": ["kk", "ru", "en"],
+  "pii_statement": "Contains no personal data. Phrases are generic paraphrases of scam scripts described in public awareness materials and media reports. No names, phone numbers, card or account numbers, links, locations or victim stories are included.",
+  "fields": {
+    "categories.id": "Stable identifier of the threat type",
+    "categories.name": "Short name of the threat type in kk / ru / en",
+    "categories.safe_response": "Plain-language advice for an older adult in kk / ru / en",
+    "patterns.id": "Stable identifier of the script pattern (QP-nnn)",
+    "patterns.category": "Threat type, refers to categories.id",
+    "patterns.channel": "How the script reaches the person",
+    "patterns.asks_for": "What the scammer wants the person to do or reveal",
+    "patterns.red_flags": "Psychological levers used by the script; the same codes are used by the pause screen checklist",
+    "patterns.phrase": "Typical sentence of the script in kk / ru / en"
+  },
+  "red_flag_codes": {
+    "secrecy": "Tell no one / do not hang up",
+    "act_now": "Act right now or lose your money",
+    "code": "Tell me the code from the SMS or eGov",
+    "transfer": "Move money to a safe or reserve account",
+    "authority": "I am from the bank, police, prosecutor or National Bank",
+    "fear": "Threat of loss, arrest or harm to a relative",
+    "reward": "Promise of a payment, bonus or profit",
+    "install_app": "Install an app or share your screen"
+  },
+  "categories": [
+    {
+      "id": "fake_bank_security",
+      "name": {"kk": "Жалған банк қауіпсіздік қызметі", "ru": "Лжеслужба безопасности банка", "en": "Fake bank security service"},
+      "safe_response": {"kk": "Тұтқаны қойып, картаңыздағы нөмір бойынша банкке өзіңіз қоңырау шалыңыз.", "ru": "Положите трубку и сами позвоните в банк по номеру на вашей карте.", "en": "Hang up and call your bank yourself using the number on your card."}
+    },
+    {
+      "id": "fake_authority",
+      "name": {"kk": "Жалған полиция, прокуратура немесе «Ұлттық банк»", "ru": "Лжеполиция, лжепрокуратура или «Нацбанк»", "en": "Fake police, prosecutor or National Bank"},
+      "safe_response": {"kk": "Нағыз қызметкерлер телефонмен ақша, код немесе құпия сақтауды сұрамайды. Тұтқаны қойып, 102-ге қоңырау шалыңыз.", "ru": "Настоящие сотрудники не просят по телефону деньги, коды или секретности. Положите трубку и позвоните 102.", "en": "Real officers never ask for money, codes or secrecy by phone. Hang up and call 102."}
+    },
+    {
+      "id": "safe_account",
+      "name": {"kk": "«Қауіпсіз шотқа» аударым", "ru": "Перевод на «безопасный счёт»", "en": "Transfer to a \"safe account\""},
+      "safe_response": {"kk": "«Қауіпсіз шот» деген болмайды. Ештеңе аудармаңыз.", "ru": "«Безопасных счетов» не бывает. Ничего не переводите.", "en": "There is no such thing as a safe account. Do not transfer anything."}
+    },
+    {
+      "id": "code_request",
+      "name": {"kk": "SMS немесе eGov кодын сұрау", "ru": "Запрос кода из SMS или eGov", "en": "Request for an SMS or eGov code"},
+      "safe_response": {"kk": "Код — ақшаңыздың кілті. Оны ешкімге айтпаңыз.", "ru": "Код — это ключ от ваших денег. Никому его не называйте.", "en": "A code is the key to your money. Never tell it to anyone."}
+    },
+    {
+      "id": "relative_in_trouble",
+      "name": {"kk": "Туысы қиын жағдайда", "ru": "Родственник в беде", "en": "Relative in trouble"},
+      "safe_response": {"kk": "Тұтқаны қойып, туысыңызға әдеттегі нөмірі бойынша қоңырау шалыңыз. Отбасылық кодтық сөзді сұраңыз.", "ru": "Положите трубку и позвоните родственнику по его обычному номеру. Спросите семейное кодовое слово.", "en": "Hang up and call your relative on their usual number. Ask for your family code word."}
+    },
+    {
+      "id": "deepfake_voice",
+      "name": {"kk": "Жасанды дауыс немесе бейне", "ru": "Поддельный голос или видео", "en": "Cloned voice or video"},
+      "safe_response": {"kk": "Тек нағыз адам білетін сұрақ қойыңыз немесе оның әдеттегі нөміріне қайта қоңырау шалыңыз.", "ru": "Задайте вопрос, ответ на который знает только настоящий человек, или перезвоните ему по обычному номеру.", "en": "Ask a question only the real person can answer, or call them back on their usual number."}
+    },
+    {
+      "id": "loan_in_your_name",
+      "name": {"kk": "«Сіздің атыңызға несие рәсімделуде»", "ru": "«На вас оформляют кредит»", "en": "\"A loan is being taken in your name\""},
+      "safe_response": {"kk": "Бейтаныс адамның кеңесімен несие алмаңыз. eGov немесе банк арқылы өзіңіз тексеріңіз.", "ru": "Не берите кредит по совету незнакомца. Проверьте сами через eGov или банк.", "en": "Never take a loan on a stranger's advice. Check yourself through eGov or your bank."}
+    },
+    {
+      "id": "remote_access",
+      "name": {"kk": "Қашықтан қол жеткізу қосымшасы", "ru": "Приложение удалённого доступа", "en": "Remote-access app"},
+      "safe_response": {"kk": "Қоңырау шалушының өтінішімен қосымша орнатпаңыз және экранды көрсетпеңіз.", "ru": "Не устанавливайте приложения и не показывайте экран по просьбе звонящего.", "en": "Never install an app or share your screen because a caller asks you to."}
+    },
+    {
+      "id": "benefit_compensation",
+      "name": {"kk": "Жалған өтемақы немесе зейнетақыға үстеме", "ru": "Ложная компенсация или надбавка к пенсии", "en": "Fake compensation or pension bonus"},
+      "safe_response": {"kk": "Мемлекеттік төлемдер үшін алым алынбайды. ХҚКО-да немесе eGov-та өзіңіз тексеріңіз.", "ru": "За государственные выплаты не берут сборов. Проверьте сами в ЦОНе или на eGov.", "en": "State payments never require a fee. Check yourself at a Public Service Centre or on eGov."}
+    },
+    {
+      "id": "phishing_sms",
+      "name": {"kk": "Фишингтік SMS немесе сілтеме", "ru": "Фишинговое SMS или ссылка", "en": "Phishing SMS or link"},
+      "safe_response": {"kk": "Сілтемелерді ашпаңыз. Банк қосымшасын өзіңіз ашыңыз.", "ru": "Не открывайте ссылки. Откройте банковское приложение сами.", "en": "Do not open links. Open your bank app yourself."}
+    },
+    {
+      "id": "utility_service",
+      "name": {"kk": "Жалған коммуналдық немесе байланыс қызметі", "ru": "Ложные коммунальные службы или оператор связи", "en": "Fake utility or mobile operator"},
+      "safe_response": {"kk": "Тұтқаны қойып, қызметтің ресми нөміріне қоңырау шалыңыз.", "ru": "Положите трубку и позвоните на официальный номер службы.", "en": "Hang up and call the official number of the service."}
+    },
+    {
+      "id": "investment",
+      "name": {"kk": "Тым тиімді инвестиция", "ru": "Слишком выгодные инвестиции", "en": "Too-good-to-be-true investment"},
+      "safe_response": {"kk": "Кепілдік берілген жоғары табыс — пирамиданың белгісі. Ақша салмас бұрын жақындарыңызбен ақылдасыңыз.", "ru": "Гарантированный высокий доход — признак пирамиды. Посоветуйтесь с близкими, прежде чем вкладывать деньги.", "en": "Guaranteed high income is a sign of a pyramid scheme. Talk to your family before you invest."}
+    }
+  ],
+  "patterns": [
+    {"id": "QP-001", "category": "fake_bank_security", "channel": ["phone_call"], "asks_for": ["sms_code"], "red_flags": ["authority", "fear", "act_now"],
+     "phrase": {"kk": "Бұл сіздің банкіңіздің қауіпсіздік қызметі. Дәл қазір біреу ақшаңызды ұрлауға тырысып жатыр.", "ru": "Это служба безопасности вашего банка. Прямо сейчас кто-то пытается украсть ваши деньги.", "en": "This is the security service of your bank. Someone is trying to steal your money right now."}},
+    {"id": "QP-002", "category": "fake_bank_security", "channel": ["phone_call", "messenger_call"], "asks_for": ["card_details"], "red_flags": ["authority", "act_now"],
+     "phrase": {"kk": "Картаңыздан күдікті аударым жасалды. Оны тоқтату үшін карта деректерін растаңыз.", "ru": "С вашей карты прошёл подозрительный перевод. Чтобы его отменить, подтвердите данные карты.", "en": "A suspicious transfer was made from your card. To cancel it, confirm your card details."}},
+    {"id": "QP-003", "category": "fake_authority", "channel": ["phone_call"], "asks_for": ["transfer"], "red_flags": ["authority", "secrecy", "fear"],
+     "phrase": {"kk": "Сіздің шотыңыз қылмысты қаржыландыруға пайдаланылып жатыр. Тергеуге көмектесуге міндеттісіз және ешкімге айтпаңыз.", "ru": "Ваш счёт используют для финансирования преступления. Вы обязаны помочь следствию и никому не говорить.", "en": "Your account is being used to finance a crime. You must help the investigation and tell no one."}},
+    {"id": "QP-004", "category": "fake_authority", "channel": ["messenger_video"], "asks_for": ["transfer"], "red_flags": ["authority", "fear", "act_now"],
+     "phrase": {"kk": "Бұл Ұлттық банк. Бүгін әрекет етпесеңіз, жинақтарыңыз бұғатталады.", "ru": "Это Национальный банк. Ваши сбережения заморозят, если вы не примете меры сегодня.", "en": "This is the National Bank. Your savings will be frozen unless you act today."}},
+    {"id": "QP-005", "category": "safe_account", "channel": ["phone_call"], "asks_for": ["transfer"], "red_flags": ["transfer", "act_now", "authority"],
+     "phrase": {"kk": "Барлық ақшаңызды қауіпсіз шотқа аударыңыз. Тексерістен кейін қайтарамыз.", "ru": "Переведите все деньги на безопасный счёт. После проверки мы их вернём.", "en": "Move all your money to a safe account. We will return it after the check."}},
+    {"id": "QP-006", "category": "safe_account", "channel": ["phone_call"], "asks_for": ["cash_deposit"], "red_flags": ["transfer", "secrecy", "act_now"],
+     "phrase": {"kk": "Қолма-қол ақшаны шешіп, банкомат арқылы осы резервтік шотқа салыңыз. Банк қызметкерлеріне себебін айтпаңыз.", "ru": "Снимите наличные и внесите их через банкомат на этот резервный счёт. Не говорите сотрудникам банка зачем.", "en": "Withdraw your cash and pay it into this reserve account at a cash machine. Do not tell the bank staff why."}},
+    {"id": "QP-007", "category": "code_request", "channel": ["phone_call"], "asks_for": ["sms_code"], "red_flags": ["code", "act_now"],
+     "phrase": {"kk": "Қазір сізге SMS-код келеді. Операцияны бұғаттауым үшін оны маған айтыңыз.", "ru": "Сейчас вам придёт SMS-код. Продиктуйте его мне, чтобы я заблокировал операцию.", "en": "You will now receive an SMS code. Read it to me so I can block the operation."}},
+    {"id": "QP-008", "category": "code_request", "channel": ["phone_call"], "asks_for": ["egov_code"], "red_flags": ["code", "authority", "act_now"],
+     "phrase": {"kk": "Цифрлық құжаттарыңызды жаңарту керек. eGov жаңа ғана жіберген кодты айтыңыз.", "ru": "Нужно обновить ваши цифровые документы. Назовите код, который только что прислал eGov.", "en": "Your digital documents need updating. Tell me the code that eGov has just sent you."}},
+    {"id": "QP-009", "category": "relative_in_trouble", "channel": ["phone_call"], "asks_for": ["transfer"], "red_flags": ["fear", "act_now", "secrecy"],
+     "phrase": {"kk": "Анашым, мен апатқа түстім. Маған дәл қазір ақша керек, әкеме айтпашы.", "ru": "Мама, я попал в аварию. Мне срочно нужны деньги, только не говори папе.", "en": "Mum, I have had an accident. I need money right now, please don't tell Dad."}},
+    {"id": "QP-010", "category": "relative_in_trouble", "channel": ["phone_call"], "asks_for": ["cash_courier"], "red_flags": ["authority", "fear", "act_now"],
+     "phrase": {"kk": "Немереңіз ұсталды. Қылмыстық іс қозғалмауы үшін өтемақыны дәл қазір мен арқылы беріңіз.", "ru": "Ваш внук задержан. Чтобы не заводить уголовное дело, срочно передайте компенсацию через меня.", "en": "Your grandson has been detained. To avoid a criminal case, pay compensation through me right now."}},
+    {"id": "QP-011", "category": "deepfake_voice", "channel": ["messenger_voice"], "asks_for": ["transfer"], "red_flags": ["act_now", "secrecy"],
+     "phrase": {"kk": "(таныс дауыспен) Бұл менмін, телефоным бұзылды, мына картаға ақша аудар, кейін түсіндіремін.", "ru": "(знакомым голосом) Это я, телефон сломался, переведи деньги на эту карту, потом объясню.", "en": "(in a familiar voice) It's me, my phone is broken, send money to this card, I'll explain later."}},
+    {"id": "QP-012", "category": "deepfake_voice", "channel": ["messenger_video"], "asks_for": ["card_details"], "red_flags": ["authority", "reward"],
+     "phrase": {"kk": "(белгілі адамның бейнесі) Мемлекет әр зейнеткерге төлем береді, мына сілтеме арқылы тіркеліңіз.", "ru": "(видео с известным человеком) Государство дарит каждому пенсионеру выплату, зарегистрируйтесь по ссылке.", "en": "(video of a famous person) The state is giving every pensioner a payment, register through this link."}},
+    {"id": "QP-013", "category": "loan_in_your_name", "channel": ["phone_call"], "asks_for": ["new_loan", "transfer"], "red_flags": ["fear", "act_now", "authority"],
+     "phrase": {"kk": "Сіздің атыңызға несие рәсімделіп жатыр. Оны жою үшін қарсы несие алып, бізге аударыңыз.", "ru": "На вас оформляют кредит. Чтобы его аннулировать, оформите встречный кредит и переведите нам.", "en": "Someone is taking a loan in your name. To cancel it, take a counter-loan and send it to us."}},
+    {"id": "QP-014", "category": "loan_in_your_name", "channel": ["sms"], "asks_for": ["call_back"], "red_flags": ["fear"],
+     "phrase": {"kk": "Сіздің атыңызға несие өтінімі мақұлданды. Егер бұл сіз болмасаңыз, осы нөмірге қоңырау шалыңыз.", "ru": "Заявка на кредит на ваше имя одобрена. Если это были не вы, позвоните по этому номеру.", "en": "A loan application in your name has been approved. If it was not you, call this number."}},
+    {"id": "QP-015", "category": "remote_access", "channel": ["phone_call"], "asks_for": ["install_app"], "red_flags": ["install_app", "authority"],
+     "phrase": {"kk": "Маманымыз шотыңызды қорғауы үшін мына қолдау қосымшасын орнатыңыз.", "ru": "Установите это приложение поддержки, чтобы наш специалист защитил ваш счёт.", "en": "Install this support app so that our specialist can protect your account."}},
+    {"id": "QP-016", "category": "remote_access", "channel": ["messenger_call"], "asks_for": ["screen_share"], "red_flags": ["install_app", "act_now"],
+     "phrase": {"kk": "Мессенджерде экранды көрсетуді қосыңыз, мен не басу керектігін көрсетемін.", "ru": "Включите демонстрацию экрана в мессенджере, я покажу, что нажимать.", "en": "Turn on screen sharing in the messenger and I will show you what to press."}},
+    {"id": "QP-017", "category": "benefit_compensation", "channel": ["phone_call"], "asks_for": ["fee"], "red_flags": ["reward", "authority"],
+     "phrase": {"kk": "Сізге дәрі-дәрмек үшін өтемақы тиесілі. Оны алу үшін рәсімдеуге шағын алым төлеңіз.", "ru": "Вам положена компенсация за лекарства. Оплатите небольшой сбор за оформление, чтобы её получить.", "en": "You are entitled to compensation for medicines. Pay a small processing fee to receive it."}},
+    {"id": "QP-018", "category": "benefit_compensation", "channel": ["sms"], "asks_for": ["card_details"], "red_flags": ["reward", "act_now"],
+     "phrase": {"kk": "Зейнетақыңыз қайта есептелді. Қосымша төлемді алу үшін картаңызды бүгін растаңыз.", "ru": "Ваша пенсия пересчитана. Подтвердите карту сегодня, чтобы получить доплату.", "en": "Your pension has been recalculated. Confirm your card today to receive the extra payment."}},
+    {"id": "QP-019", "category": "phishing_sms", "channel": ["sms"], "asks_for": ["card_details", "sms_code"], "red_flags": ["reward", "act_now"],
+     "phrase": {"kk": "Бонустарыңыз бүгін жанып кетеді. Оларды сілтеме арқылы ақшаға айырбастаңыз.", "ru": "Ваши бонусы сгорают сегодня. Обменяйте их на деньги по ссылке.", "en": "Your bonus points expire today. Exchange them for money at the link."}},
+    {"id": "QP-020", "category": "phishing_sms", "channel": ["sms", "messenger_message"], "asks_for": ["card_details"], "red_flags": ["fear", "act_now"],
+     "phrase": {"kk": "Картаңыз бұғатталды. Бұғаттан шығару үшін сілтемеге деректеріңізді енгізіңіз.", "ru": "Ваша карта заблокирована. Для разблокировки введите данные по ссылке.", "en": "Your card is blocked. To unblock it, enter your details at the link."}},
+    {"id": "QP-021", "category": "utility_service", "channel": ["phone_call"], "asks_for": ["sms_code"], "red_flags": ["code", "authority"],
+     "phrase": {"kk": "SIM-картаңыздың келісімшарты аяқталып жатыр. Ұзарту үшін SMS-тегі кодты айтыңыз.", "ru": "У вашей SIM-карты заканчивается договор. Назовите код из SMS, чтобы продлить его.", "en": "Your SIM card contract is ending. Tell me the code from the SMS to extend it."}},
+    {"id": "QP-022", "category": "utility_service", "channel": ["phone_call"], "asks_for": ["prepayment"], "red_flags": ["authority", "act_now", "fear"],
+     "phrase": {"kk": "Үйіңізде газ есептегіштері ауыстырылуда. Бүгін алдын ала төлем жасаңыз, әйтпесе газ өшіріледі.", "ru": "В вашем доме меняют газовые счётчики. Внесите предоплату сегодня, иначе газ отключат.", "en": "Gas meters are being replaced in your building. Pay in advance today or the gas will be cut off."}},
+    {"id": "QP-023", "category": "investment", "channel": ["messenger_message"], "asks_for": ["deposit"], "red_flags": ["reward", "act_now"],
+     "phrase": {"kk": "Мемлекет қолдайтын жоба айына 30% кепілдік береді. Орын аз, бүгін қосылыңыз.", "ru": "Проект с государственной поддержкой гарантирует 30% в месяц. Мест мало, вступайте сегодня.", "en": "A state-backed project guarantees 30% a month. Places are limited, join today."}},
+    {"id": "QP-024", "category": "investment", "channel": ["phone_call"], "asks_for": ["deposit", "install_app"], "red_flags": ["reward", "install_app"],
+     "phrase": {"kk": "Біздің талдаушымыз биржада табыс табуға көмектеседі. Шағын салымнан бастап, біздің қосымшаны орнатыңыз.", "ru": "Наш аналитик поможет вам заработать на бирже. Начните с небольшого депозита и установите наше приложение.", "en": "Our analyst will help you earn on the stock exchange. Start with a small deposit and install our app."}}
+  ]
+}
+</script>
+<script>
+(function () {
+  'use strict';
+  var I18N = JSON.parse(document.getElementById('i18n').textContent);
+  var DATA = JSON.parse(document.getElementById('dataset').textContent);
+  var LS_SETTINGS = 'q60.settings.v1';
+  var LS_EVENTS = 'q60.events.v1';
+  var params = new URLSearchParams(location.search);
+  var SHOT = params.get('shot');
+  function $(s, r) { return (r || document).querySelector(s); }
+  function $$(s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
+
+  var store = {
+    get: function (k) { if (SHOT) return null; try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+    set: function (k, v) { if (SHOT) return; try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* storage unavailable: keep in memory */ } },
+    del: function (k) { try { localStorage.removeItem(k); } catch (e) { /* ignore */ } }
+  };
+  var DEFAULTS = { onboarded: false, consentAuto: false, consentSms: false, consentAi: false,
+    trustedName: '', trustedPhone: '', codeHash: '', codeSalt: '', lang: 'en', fs: 1 };
+  var S = Object.assign({}, DEFAULTS, store.get(LS_SETTINGS) || {});
+  var EVENTS = store.get(LS_EVENTS) || [];
+  var st = { screen: 's1', obStep: 1, fast: true, pause: null, alert: null, timers: [], lastDecision: null,
+    relView: 'sms', clock: null, frozenLeft: null };
+
+  var phone = $('#phone');
+
+  /* ---------- helpers ---------- */
+  function t(key, vars) {
+    var d = I18N[S.lang] || I18N.en;
+    var s = d[key] !== undefined ? d[key] : (I18N.en[key] !== undefined ? I18N.en[key] : key);
+    if (vars) s = s.replace(/\{(\w+)\}/g, function (m, k) { return vars[k] !== undefined ? vars[k] : m; });
+    return s;
+  }
+  function saveSettings() { store.set(LS_SETTINGS, S); }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+  function hhmm(d) { return pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+  function now() { return st.clock ? new Date(st.clock) : new Date(); }
+  function isoWeek(d) {
+    var x = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    var day = x.getUTCDay() || 7; x.setUTCDate(x.getUTCDate() + 4 - day);
+    var y0 = new Date(Date.UTC(x.getUTCFullYear(), 0, 1));
+    var wk = Math.ceil(((x - y0) / 86400000 + 1) / 7);
+    return x.getUTCFullYear() + '-W' + pad(wk);
+  }
+  function later(ms, fn) { st.timers.push(setTimeout(fn, ms)); }
+  function clearTimers() { st.timers.forEach(clearTimeout); st.timers = []; }
+  function trustedLabel() { return S.trustedName || t('demo_name'); }
+
+  var toastTimer = null;
+  function toast(msg) {
+    var el = $('#toast'); el.textContent = msg; el.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { el.hidden = true; }, 3200);
+  }
+  function log(msg) {
+    var li = document.createElement('li');
+    li.textContent = hhmm(now()) + ':' + pad(now().getSeconds()) + '  ' + msg;
+    var ol = $('#log'); ol.insertBefore(li, ol.firstChild);
+    while (ol.children.length > 12) ol.removeChild(ol.lastChild);
+  }
+
+  /* Code word is never stored in clear text: salted SHA-256 (fallback FNV-1a if WebCrypto is unavailable). */
+  function normWord(w) { return (w || '').normalize('NFC').trim().toLowerCase(); }
+  function hashWord(word, salt) {
+    var data = salt + ':' + normWord(word);
+    if (window.crypto && crypto.subtle && window.TextEncoder) {
+      return crypto.subtle.digest('SHA-256', new TextEncoder().encode(data)).then(function (buf) {
+        return 'sha256:' + Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+      }).catch(function () { return fnv(data); });
+    }
+    return Promise.resolve(fnv(data));
+  }
+  function fnv(s) { var h = 0x811c9dc5; for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return 'fnv:' + h.toString(16); }
+  function newSalt() {
+    var a = new Uint8Array(8);
+    if (window.crypto && crypto.getRandomValues) crypto.getRandomValues(a); else for (var i = 0; i < 8; i++) a[i] = Math.floor(Math.random() * 256);
+    return Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+  }
+  function setCodeWord(word) {
+    S.codeSalt = newSalt();
+    return hashWord(word, S.codeSalt).then(function (h) { S.codeHash = h; });
+  }
+
+  /* ---------- i18n and accessibility chrome ---------- */
+  function applyI18n() {
+    phone.setAttribute('lang', S.lang);
+    $$('[data-i18n]').forEach(function (el) { el.textContent = t(el.getAttribute('data-i18n')); });
+    $$('[data-i18n-ph]').forEach(function (el) { el.setAttribute('placeholder', t(el.getAttribute('data-i18n-ph'))); });
+    $$('[data-i18n-aria]').forEach(function (el) { el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria'))); });
+    $$('#langSeg button').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-lang') === S.lang)); });
+    $$('#fsSeg button').forEach(function (b) { b.setAttribute('aria-pressed', String(+b.getAttribute('data-fs') === +S.fs)); });
+    phone.setAttribute('data-fs', String(S.fs));
+    renderScreen(st.screen);
+  }
+  function setLang(l) { S.lang = l; saveSettings(); applyI18n(); log('Language → ' + l.toUpperCase()); }
+  function setFs(f) { S.fs = f; saveSettings(); applyI18n(); log('Text size → ' + ['A', 'A+', 'A++'][f - 1]); }
+
+  /* ---------- navigation ---------- */
+  function show(id, opts) {
+    opts = opts || {};
+    clearTimers(); /* leaving the pause screen does not stop the pause timer */
+    st.screen = id;
+    $$('.screen').forEach(function (s) { s.hidden = (s.id !== id); });
+    phone.classList.toggle('rel-mode', id === 's5');
+    phone.classList.toggle('pause-mode', id === 's4');
+    renderScreen(id);
+    $('#screens').scrollTop = 0;
+    if (!opts.noFocus) { var h = $('#' + id + ' h2'); if (h) h.focus({ preventScroll: true }); }
+    updatePanel();
+  }
+  function renderScreen(id) {
+    if (id === 's1') renderOb();
+    else if (id === 's2') renderHome();
+    else if (id === 's3') renderScenarioLabels();
+    else if (id === 's4') renderPause();
+    else if (id === 's5') renderRelative();
+    else if (id === 's6') renderPrivacy();
+  }
+
+  /* ---------- screen 1: onboarding and consent ---------- */
+  function renderOb() {
+    var n = st.obStep;
+    $('#obStepLabel').textContent = t('ob_step', { n: n });
+    ['st1', 'st2', 'st3'].forEach(function (id, i) { $('#' + id).className = (i < n) ? 'on' : ''; });
+    $('#s1h').textContent = t(['ob_title1', 'ob_title2', 'ob_title3'][n - 1]);
+    $('#ob1').hidden = n !== 1; $('#ob2').hidden = n !== 2; $('#ob3').hidden = n !== 3;
+    $('#cAuto').checked = S.consentAuto; $('#cSms').checked = S.consentSms; $('#cAi').checked = S.consentAi;
+    $('#obManualNote').hidden = S.consentAuto;
+  }
+  function obGo(n) { st.obStep = n; renderOb(); $('#s1h').focus({ preventScroll: true }); $('#screens').scrollTop = 0; }
+  function obFinish(ev) {
+    if (ev) ev.preventDefault();
+    var name = $('#fName').value.trim(), tel = $('#fPhone').value.trim(), c1 = $('#fCode').value, c2 = $('#fCode2').value;
+    var ok = true;
+    ['eName', 'ePhone', 'eCode', 'eCode2'].forEach(function (id) { $('#' + id).textContent = ''; });
+    if (S.consentSms && !name) { $('#eName').textContent = t('err_req'); ok = false; }
+    if (S.consentSms && tel.replace(/\D/g, '').length < 10) { $('#ePhone').textContent = t('err_req'); ok = false; }
+    if (normWord(c1).length < 3) { $('#eCode').textContent = t('err_short'); ok = false; }
+    else if (normWord(c1) !== normWord(c2)) { $('#eCode2').textContent = t('err_match'); ok = false; }
+    if (!ok) { var first = $('#ob3 .err:not(:empty)'); var inp = first && first.parentNode.querySelector('input'); if (inp) inp.focus(); return; }
+    S.trustedName = name; S.trustedPhone = tel;
+    setCodeWord(c1).then(function () {
+      S.onboarded = true; saveSettings();
+      $('#fCode').value = ''; $('#fCode2').value = '';
+      log('Onboarding finished. Consents: auto=' + S.consentAuto + ', sms=' + S.consentSms + ', ai=' + S.consentAi);
+      show('s2'); toast(S.consentAuto ? t('h_on') : t('h_manual'));
+    });
+  }
+
+  /* ---------- screen 2: home ---------- */
+  function renderHome() {
+    var card = $('#statusCard');
+    card.classList.toggle('manual', !S.consentAuto);
+    $('#hStatus').textContent = S.consentAuto ? t('h_on') : t('h_manual');
+    $('#hStatusSub').textContent = S.consentAuto ? t('h_on_sub') : t('h_manual_sub');
+    $('#hAi').textContent = S.consentAi ? t('cb_ai_on') : t('cb_ai_off');
+    var tr = S.trustedName ? (S.trustedName + (S.trustedPhone ? ' · ' + S.trustedPhone : '')) : t('h_none');
+    $('#hTrusted').textContent = tr + ' — ' + (S.consentSms && S.trustedPhone ? t('h_sms_on') : t('h_sms_off'));
+  }
+
+  /* ---------- screen 3: simulated scam scenario (zero-button trigger) ---------- */
+  function setPill(id, v) {
+    var el = $(id); el.className = 'pill' + (v === 'yes' ? ' yes' : v === 'no' ? ' no' : '');
+    el.textContent = v === 'yes' ? t('yes') : v === 'no' ? t('no') : t('wait');
+  }
+  function renderScenarioLabels() {
+    if (!st.scenario) resetScenarioUI();
+    else drawScenario(st.scenario.kind, st.scenario.step);
+  }
+  function resetScenarioUI() {
+    st.scenario = null;
+    $('#callCard').hidden = true; $('#bankCard').hidden = true; $('#smsCard').hidden = true; $('#aiNote').hidden = true;
+    setPill('#det1', 'wait'); setPill('#det2', 'wait');
+    $('#scMsg').innerHTML = ''; $('#scButtons').hidden = false; $('#scHint').hidden = false;
+  }
+  function drawScenario(kind, step) {
+    var known = kind === 'known';
+    $('#scButtons').hidden = true; $('#scHint').hidden = true;
+    $('#callCard').hidden = step < 1;
+    $('#callWho').textContent = known ? trustedLabel() : t('call_unknown') + ' +7 7•• ••• •• 31';
+    $('#callSub').textContent = known ? t('call_inc') : t('call_notc');
+    $('#callSays').hidden = known || step < 1; $('#callSays').textContent = t('call_says');
+    $('#bankCard').hidden = !(step >= 2 && kind !== 'sms');
+    $('#smsCard').hidden = !(step >= 2 && kind === 'sms');
+    $('#aiNote').hidden = !(step >= 2 && kind === 'sms' && S.consentAi);
+    setPill('#det1', step >= 3 ? (known ? 'no' : 'yes') : 'wait');
+    setPill('#det2', step >= 3 ? 'yes' : 'wait');
+    var box = $('#scMsg'); box.innerHTML = '';
+    if (step >= 4) {
+      var p = document.createElement('p');
+      var d = decide(!known);
+      p.className = 'msg ' + (d.trigger ? 'info' : 'calm');
+      p.textContent = d.trigger ? t('sc_trig') : (d.reason === 'auto_off' ? t('sc_auto_off') : t('sc_known_msg'));
+      box.appendChild(p);
+    }
+  }
+  function decide(unknownCaller) {
+    if (!S.consentAuto) return { trigger: false, reason: 'auto_off' };
+    if (!unknownCaller) return { trigger: false, reason: 'known' };
+    return { trigger: true, reason: 'two_signals' };
+  }
+  function recordDecision(kind, d) {
+    st.lastDecision = { time: hhmm(now()), kind: kind, trigger: d.trigger, reason: d.reason, ai: (kind === 'sms' && S.consentAi) };
+    var sig = kind === 'sms' ? 'SMS code received' : 'banking app foreground';
+    if (kind === 'manual') log('DECISION: pause started manually by the user');
+    else if (d.trigger) log('DECISION: unknown caller=YES + ' + sig + '=YES → PAUSE (rule: both signals)');
+    else if (d.reason === 'known') log('DECISION: unknown caller=NO (in contacts) + ' + sig + '=YES → no pause');
+    else log('DECISION: automatic watching is OFF → no pause');
+    if (st.lastDecision.ai) log('AI filter (local): SMS contains a one-time code → gentle note shown, nothing blocked');
+  }
+  function runScenario(kind) {
+    ensureSetup();
+    if (st.pause && !st.pause.ended) stopPause('abandoned');
+    if (kind === 'manual') { show('s2', { noFocus: true }); startPause('manual'); return; }
+    show('s3', { noFocus: true });
+    st.scenario = { kind: kind, step: 0 };
+    log('Scenario: ' + (kind === 'known' ? 'trusted contact calls' : 'unknown number calls') + (kind === 'sms' ? ', SMS code arrives' : ', banking app opens'));
+    var steps = [[300, 1], [1700, 2], [2600, 3], [3300, 4]];
+    steps.forEach(function (s) { later(s[0], function () { st.scenario.step = s[1]; drawScenario(kind, s[1]); if (s[1] === 4) { var d = decide(kind !== 'known'); recordDecision(kind, d); if (d.trigger) later(1800, function () { startPause(kind); }); } }); });
+  }
+
+  /* ---------- screen 4: the 15-minute script-breaking pause ---------- */
+  var breathTimer = null, tickTimer = null;
+  function startPause(trigger) {
+    if (trigger === 'manual') recordDecision('manual', { trigger: true, reason: 'manual' });
+    var dur = st.fast ? 15 : 900;
+    st.pause = { trigger: trigger, start: Date.now(), dur: dur, ended: false, called: false, lastAnnounce: null };
+    var smsOn = S.consentSms && !!S.trustedPhone;
+    st.alert = smsOn ? { time: hhmm(now()), trigger: trigger, start: Date.now() } : null;
+    $$('#pChecklist input').forEach(function (c) { c.checked = false; });
+    $('#pCode').value = ''; $('#pExitMsg').textContent = '';
+    show('s4');
+    if (smsOn) log('SMS to trusted person: "' + t('what_' + (trigger === 'known' ? 'bank' : trigger)) + '" (no content, no numbers)');
+    else log('No SMS sent (consent off or no trusted person)');
+    log('Pause started: ' + (st.fast ? '15 s demo' : '15 min') + ' timer');
+    clearInterval(tickTimer); clearInterval(breathTimer);
+    tickTimer = setInterval(tickPause, 250);
+    st.breathIn = true; breathTimer = setInterval(function () { st.breathIn = !st.breathIn; $('#pBreath').textContent = st.breathIn ? t('p_in') : t('p_out'); }, 4000);
+    tickPause();
+  }
+  function secondsLeft() {
+    if (!st.pause) return 0;
+    if (st.frozenLeft !== null) return st.frozenLeft;
+    return Math.max(0, Math.ceil(st.pause.dur - (Date.now() - st.pause.start) / 1000));
+  }
+  function tickPause() {
+    if (!st.pause || st.pause.ended) return;
+    var left = secondsLeft();
+    $('#pTimer').textContent = pad(Math.floor(left / 60)) + ':' + pad(left % 60);
+    var step = st.pause.dur > 60 ? 60 : 5;
+    var mark = Math.ceil(left / step);
+    if (st.pause.lastAnnounce !== mark && left > 0 && left % step === 0) {
+      st.pause.lastAnnounce = mark;
+      $('#pLive').textContent = st.pause.dur > 60 ? t('p_min_left', { m: left / 60 }) : t('p_sec_left', { s: left });
+    }
+    if (left <= 0 && st.frozenLeft === null) stopPause('timer_completed');
+  }
+  function stopPause(outcome) {
+    clearInterval(tickTimer); clearInterval(breathTimer);
+    if (!st.pause || st.pause.ended) return;
+    st.pause.ended = true; st.pause.outcome = outcome;
+    if (outcome !== 'abandoned') {
+      EVENTS.push({ w: isoWeek(now()), tr: st.pause.trigger === 'known' ? 'bank' : st.pause.trigger, out: outcome, ai: S.consentAi ? 1 : 0, call: st.pause.called ? 1 : 0 });
+      var cutoff = isoWeek(new Date(Date.now() - 90 * 86400000));
+      EVENTS = EVENTS.filter(function (e) { return e.w >= cutoff; });
+      store.set(LS_EVENTS, EVENTS);
+    }
+    log('Pause ended: ' + outcome);
+    if (st.screen === 's4') renderPause();
+  }
+  function renderPause() {
+    var p = st.pause;
+    var done = p && p.ended && p.outcome === 'timer_completed';
+    $('#pTimerRow').hidden = !!done; $('#pDone').hidden = !done;
+    if (p && !p.ended) { var left = secondsLeft(); $('#pTimer').textContent = pad(Math.floor(left / 60)) + ':' + pad(left % 60); }
+    if (!p) $('#pTimer').textContent = st.fast ? '00:15' : '15:00';
+    $('#pBreath').textContent = st.breathIn === false ? t('p_out') : t('p_in');
+    $('#pCall').textContent = S.trustedName ? t('p_call', { name: S.trustedName }) : t('p_call_generic');
+    var trig = p ? (p.trigger === 'known' ? 'bank' : p.trigger) : 'bank';
+    $('#pSent').textContent = (st.alert && p) ? t('p_sms_sent', { name: S.trustedName, what: t('what_' + trig) }) : t('p_sms_off');
+    updateVerdict();
+  }
+  function updateVerdict() {
+    var any = $$('#pChecklist input').some(function (c) { return c.checked; });
+    var v = $('#pVerdict'); v.className = 'verdict ' + (any ? 'scam' : 'none'); v.textContent = any ? t('p_v_scam') : t('p_v_none');
+  }
+  function tryExit(ev) {
+    ev.preventDefault();
+    var msg = $('#pExitMsg');
+    if (!st.pause || st.pause.ended) { show('s2'); return; }
+    if (!S.codeHash) { msg.textContent = t('p_no_code'); return; }
+    hashWord($('#pCode').value, S.codeSalt).then(function (h) {
+      if (h === S.codeHash) {
+        $('#pCode').value = ''; stopPause('code_word_exit'); toast(t('p_exit_ok')); show('s2');
+      } else {
+        msg.textContent = t('p_exit_wrong'); log('Code word did not match (no lock-out, no penalty)');
+      }
+    });
+  }
+
+  /* ---------- screen 5: relative's phone ---------- */
+  function linkFor(a) {
+    var code = a.trigger === 'manual' ? 'm' : (a.trigger === 'sms' ? 'cs' : 'cb');
+    return 'q60.example/s#v1-' + code + '-' + a.time.replace(':', '');
+  }
+  function renderRelative() {
+    var name = S.trustedName || t('demo_name');
+    $('#rBanner').textContent = t('r_banner', { name: name });
+    $('#s5h').textContent = t('r_mum');
+    var thread = $('#rThread'); thread.innerHTML = '';
+    function bubble(text, time, link) {
+      var d = document.createElement('div'); d.className = 'sms-in';
+      if (link) {
+        var parts = text.split(link);
+        d.appendChild(document.createTextNode(parts[0]));
+        var b = document.createElement('button'); b.type = 'button'; b.className = 'linkbtn'; b.textContent = link;
+        b.addEventListener('click', function () { st.relView = 'status'; renderRelative(); $('#screens').scrollTop = 0; $('#rBack').focus({ preventScroll: true }); });
+        d.appendChild(b);
+        if (parts[1]) d.appendChild(document.createTextNode(parts[1]));
+      } else d.textContent = text;
+      var tm = document.createElement('span'); tm.className = 'time'; tm.textContent = time; d.appendChild(tm);
+      thread.appendChild(d);
+    }
+    if (S.trustedPhone || SHOT) bubble(t('r_welcome'), '09:12');
+    var a = st.alert;
+    $('#rNone').hidden = !!a;
+    if (a) {
+      var link = linkFor(a);
+      var tr = a.trigger === 'known' ? 'bank' : a.trigger;
+      var txt = a.trigger === 'manual' ? t('r_sms_manual', { time: a.time, link: link }) : t('r_sms_cb', { sig: t('sig2_' + tr), time: a.time, link: link });
+      bubble(txt, a.time, link);
+    }
+    var showStatus = st.relView === 'status' && !!a;
+    $('#rSmsView').hidden = showStatus; $('#rStatusView').hidden = !showStatus;
+    if (showStatus) {
+      $('#rUrl').textContent = 'https://' + linkFor(a);
+      $('#rStActive').textContent = t('r_st_active');
+      var mins = st.clock ? 3 : Math.max(0, Math.floor((Date.now() - a.start) / 60000));
+      $('#rStSince').textContent = t('r_st_since', { time: a.time, min: mins });
+      var tr2 = a.trigger === 'known' ? 'bank' : a.trigger;
+      $('#rStSig').textContent = a.trigger === 'manual' ? t('r_st_sig_manual') : t('r_st_sig', { sig: t('sig_' + tr2) });
+    }
+  }
+
+  /* ---------- screen 6: privacy, AI oversight, open data ---------- */
+  function renderPrivacy() {
+    $('#swAi').checked = S.consentAi; $('#swAuto').checked = S.consentAuto; $('#swSms').checked = S.consentSms;
+    var d = st.lastDecision, why = $('#pvWhy');
+    if (!d) why.textContent = t('pv_why_none');
+    else {
+      var sig = t(d.kind === 'sms' ? 'sig_sms' : 'sig_bank');
+      var s = d.reason === 'manual' ? t('why_manual', { time: d.time }) : d.trigger ? t('why_trig', { time: d.time, sig: sig }) : d.reason === 'known' ? t('why_known', { time: d.time }) : t('why_auto_off', { time: d.time });
+      if (d.ai) s += t('why_ai', { phrase: t('sms_text').split('.')[0] });
+      why.textContent = s;
+    }
+  }
+  function aggregate() {
+    var map = {};
+    EVENTS.forEach(function (e) {
+      var trig = e.tr === 'manual' ? 'manual_button' : (e.tr === 'sms' ? 'unknown_call+sms_code' : 'unknown_call+bank_app');
+      var k = [e.w, trig, e.out, e.ai ? 'on' : 'off', e.call ? 'yes' : 'no'].join('|');
+      map[k] = (map[k] || 0) + 1;
+    });
+    return Object.keys(map).sort().map(function (k) { var p = k.split('|'); return { week: p[0], trigger: p[1], outcome: p[2], ai_filter: p[3], called_trusted_person: p[4], count: map[k] }; });
+  }
+  function download(name, mime, text) {
+    var blob = new Blob([text], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(function () { URL.revokeObjectURL(url); a.remove(); }, 1000);
+    $('#exMsg').textContent = t('pv_saved', { file: name });
+    log('Export: ' + name + ' (aggregated counts + taxonomy, no personal data)');
+  }
+  function exportData(fmt) {
+    var week = isoWeek(now());
+    var counts = aggregate();
+    var tax = DATA.patterns.map(function (p) { return { id: p.id, category: p.category, channel: p.channel.join('|'), asks_for: p.asks_for.join('|'), red_flags: p.red_flags.join('|') }; });
+    if (fmt === 'json') {
+      var obj = {
+        dataset: 'Qalqan-60+ anonymised threat statistics', schema_version: '1.0', generated_week: week,
+        license: 'ODC-By-1.0', license_url: 'https://opendatacommons.org/licenses/by/1-0/', attribution: 'Qalqan-60+ contributors',
+        privacy: 'No names, phone numbers, message text, exact times or locations. Counts are grouped by ISO week. When pooled from many phones, counts below 5 are suppressed before publication.',
+        pause_counts: counts, threat_taxonomy: tax, taxonomy_version: DATA.version
+      };
+      download('qalqan60_open_data_' + week + '.json', 'application/json', JSON.stringify(obj, null, 2));
+    } else {
+      var rows = ['record_type,week,trigger,outcome,ai_filter,called_trusted_person,count,pattern_id,category,channel,asks_for,red_flags'];
+      counts.forEach(function (c) { rows.push(['pause_count', c.week, c.trigger, c.outcome, c.ai_filter, c.called_trusted_person, c.count, '', '', '', '', ''].join(',')); });
+      tax.forEach(function (p) { rows.push(['taxonomy', '', '', '', '', '', '', p.id, p.category, p.channel, p.asks_for, p.red_flags].join(',')); });
+      download('qalqan60_open_data_' + week + '.csv', 'text/csv;charset=utf-8', '﻿' + rows.join('\r\n') + '\r\n');
+    }
+  }
+  var lastFocus = null;
+  function openModal() { lastFocus = document.activeElement; $('#modal').hidden = false; $('#mdNo').focus(); log('Delete dialog opened (equal buttons, no confirmshaming)'); }
+  function closeModal() { $('#modal').hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
+  function deleteAll() {
+    store.del(LS_SETTINGS); store.del(LS_EVENTS);
+    var keep = { lang: S.lang, fs: S.fs };
+    S = Object.assign({}, DEFAULTS, keep); EVENTS = [];
+    st.alert = null; st.lastDecision = null; if (st.pause) { st.pause.ended = true; } clearInterval(tickTimer); clearInterval(breathTimer); st.pause = null;
+    $('#modal').hidden = true;
+    ['fName', 'fPhone', 'fCode', 'fCode2'].forEach(function (id) { $('#' + id).value = ''; });
+    st.obStep = 1; show('s1'); toast(t('md_done'));
+    log('All local data deleted (settings, code word hash, counters)');
+  }
+
+  /* ---------- presenter panel ---------- */
+  var CUES = {
+    s1: 'Onboarding & informed consent. Point out: plain-language guarantees, nothing is pre-ticked, every choice can be withdrawn, and the relative gets a welcome SMS so they can say no.',
+    s2: 'Calm home. Switch ҚАЗ / РУС / ENG and A / A+ / A++ live. Read the clear-box rule: only two signals together start a pause.',
+    s3: 'Run "Unknown call + banking app". Stress: the user presses nothing; the shield starts by itself. Then run "Trusted contact calls" to show there is no false alarm.',
+    s4: 'Script-breaking pause: breathing cue, scammer-script mirror, big call button, code-word exit. Type a wrong word first (calm, no shaming), then "Barsik".',
+    s5: "Relative's phone: an ordinary SMS, no app, no login. Open the link: only a status snapshot and the list of what can never be seen.",
+    s6: 'Privacy & AI: switch the AI filter off and on, read "last decision explained", download JSON/CSV, open the delete dialog with equal buttons.'
+  };
+  function updatePanel() {
+    $$('#screenBtns .pbtn').forEach(function (b) { b.setAttribute('aria-current', String(b.getAttribute('data-go') === st.screen)); });
+    $('#cue').textContent = CUES[st.screen] || '';
+    $('#tFast').setAttribute('aria-pressed', String(st.fast)); $('#tReal').setAttribute('aria-pressed', String(!st.fast));
+  }
+  function demoFill() {
+    S.onboarded = true; S.consentAuto = true; S.consentSms = true; S.consentAi = false;
+    S.trustedName = t('demo_name'); S.trustedPhone = '+7 000 000 00 00';
+    return setCodeWord('Barsik').then(saveSettings);
+  }
+  function ensureSetup() { if (!S.onboarded) { S.onboarded = true; S.consentAuto = true; S.consentSms = true; S.trustedName = t('demo_name'); S.trustedPhone = '+7 000 000 00 00'; setCodeWord('Barsik').then(saveSettings); log('Demo data filled automatically (code word: Barsik)'); } }
+
+  /* ---------- phone scaling for projectors ---------- */
+  function fit() {
+    var wrap = $('#phoneWrap');
+    var sc = 1;
+    if (!SHOT) {
+      var head = $('.page-head').offsetHeight;
+      var availH = window.innerHeight - head - 40;
+      var availW = Math.min(window.innerWidth - 40, 418);
+      sc = Math.max(0.55, Math.min(1, availH / 872, availW / 418));
+    }
+    phone.style.transform = 'scale(' + sc + ')';
+    wrap.style.width = (418 * sc) + 'px'; wrap.style.height = (872 * sc) + 'px';
+  }
+
+  /* ---------- events ---------- */
+  $$('#langSeg button, .lang-links button').forEach(function (b) { b.addEventListener('click', function () { setLang(b.getAttribute('data-lang')); }); });
+  $$('#fsSeg button').forEach(function (b) { b.addEventListener('click', function () { setFs(+b.getAttribute('data-fs')); }); });
+  $('#ob1Next').addEventListener('click', function () { obGo(2); });
+  $('#ob2Back').addEventListener('click', function () { obGo(1); });
+  $('#ob2Next').addEventListener('click', function () { obGo(3); });
+  $('#ob3Back').addEventListener('click', function () { obGo(2); });
+  $('#ob3').addEventListener('submit', obFinish);
+  $('#cAuto').addEventListener('change', function (e) { S.consentAuto = e.target.checked; $('#obManualNote').hidden = S.consentAuto; });
+  $('#cSms').addEventListener('change', function (e) { S.consentSms = e.target.checked; });
+  $('#cAi').addEventListener('change', function (e) { S.consentAi = e.target.checked; });
+  $('#btnRushed').addEventListener('click', function () { startPause('manual'); });
+  $('#btnPractice').addEventListener('click', function () { st.scenario = null; show('s3'); });
+  $('#btnPrivacy').addEventListener('click', function () { show('s6'); });
+  $('#scBank').addEventListener('click', function () { runScenario('bank'); });
+  $('#scSms').addEventListener('click', function () { runScenario('sms'); });
+  $('#scKnown').addEventListener('click', function () { runScenario('known'); });
+  $('#scHome').addEventListener('click', function () { st.scenario = null; show('s2'); });
+  $$('#pChecklist input').forEach(function (c) { c.addEventListener('change', function () { updateVerdict(); if (c.checked) log('Script mirror: user recognised "' + c.getAttribute('data-flag') + '"'); }); });
+  $('#pCall').addEventListener('click', function () { if (st.pause) st.pause.called = true; toast(t('p_calling', { name: S.trustedName || t('p_call_generic') })); log('User chose to call the trusted person (simulated)'); });
+  $('#pBank').addEventListener('click', function () { toast(t('p_calling_bank')); log('User chose to call the bank using the number on the card (simulated)'); });
+  $('#pExit').addEventListener('submit', tryExit);
+  $('#pDoneHome').addEventListener('click', function () { show('s2'); });
+  $('#rBack').addEventListener('click', function () { st.relView = 'sms'; renderRelative(); });
+  $('#rCall').addEventListener('click', function () { toast(t('p_calling', { name: t('r_mum') })); log('Relative pressed "Call calmly" (no data was accessed)'); });
+  $('#swAi').addEventListener('change', function (e) { S.consentAi = e.target.checked; saveSettings(); toast(t('saved')); log('AI filter switched ' + (S.consentAi ? 'ON' : 'OFF') + ' by the user'); });
+  $('#swAuto').addEventListener('change', function (e) { S.consentAuto = e.target.checked; saveSettings(); toast(t('saved')); log('Automatic watching ' + (S.consentAuto ? 'ON' : 'OFF') + ' (consent ' + (S.consentAuto ? 'given' : 'withdrawn') + ')'); });
+  $('#swSms').addEventListener('change', function (e) { S.consentSms = e.target.checked; saveSettings(); toast(t('saved')); log('SMS to trusted person ' + (S.consentSms ? 'ON' : 'OFF')); });
+  $('#exJson').addEventListener('click', function () { exportData('json'); });
+  $('#exCsv').addEventListener('click', function () { exportData('csv'); });
+  $('#delOpen').addEventListener('click', openModal);
+  $('#mdNo').addEventListener('click', function () { closeModal(); log('Delete cancelled'); });
+  $('#mdYes').addEventListener('click', deleteAll);
+  $('#pvHome').addEventListener('click', function () { show('s2'); });
+  $('#modal').addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { closeModal(); }
+    if (e.key === 'Tab') { var f = [$('#mdNo'), $('#mdYes')]; var i = f.indexOf(document.activeElement); if (e.shiftKey && i <= 0) { e.preventDefault(); f[1].focus(); } else if (!e.shiftKey && i === 1) { e.preventDefault(); f[0].focus(); } }
+  });
+  function goScreen(id) {
+    if (id === 's1') st.obStep = 1;
+    if (id === 's3') st.scenario = null;
+    if (id !== 's1' && !S.onboarded) ensureSetup();
+    if (id === 's4' && (!st.pause || st.pause.ended)) { recordDecision('bank', { trigger: true, reason: 'two_signals' }); startPause('bank'); return; }
+    show(id, { noFocus: true });
+  }
+  $$('#screenBtns .pbtn').forEach(function (b) { b.addEventListener('click', function () { goScreen(b.getAttribute('data-go')); }); });
+  $$('[data-run]').forEach(function (b) { b.addEventListener('click', function () { runScenario(b.getAttribute('data-run')); }); });
+  $('#tFast').addEventListener('click', function () { st.fast = true; updatePanel(); log('Pause length: 15-second demo'); });
+  $('#tReal').addEventListener('click', function () { st.fast = false; updatePanel(); log('Pause length: real 15 minutes'); });
+  $('#pFill').addEventListener('click', function () { demoFill().then(function () { show('s2', { noFocus: true }); log('Demo data filled (trusted person + code word "Barsik")'); }); });
+  $('#pReset').addEventListener('click', function () { deleteAll(); });
+  document.addEventListener('keydown', function (e) {
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea' || e.altKey || e.ctrlKey || e.metaKey) return;
+    if (/^[1-6]$/.test(e.key) && $('#modal').hidden) goScreen('s' + e.key);
+  });
+  window.addEventListener('resize', fit);
+
+  /* ---------- deterministic states for report figures (?shot=name&lang=xx&fs=n&ai=1) ---------- */
+  function setupShot(name) {
+    document.body.classList.add('shot');
+    st.clock = new Date(2026, 10, 18, 14, 5, 0).getTime();
+    $('#sbTime').textContent = '14:05';
+    S = Object.assign({}, DEFAULTS, { lang: params.get('lang') || 'en', fs: +(params.get('fs') || 1) });
+    function demo() { Object.assign(S, { onboarded: true, consentAuto: true, consentSms: true, consentAi: params.get('ai') === '1', trustedName: t('demo_name'), trustedPhone: '+7 000 000 00 00', codeHash: 'x', codeSalt: 'x' }); }
+    function pauseAt(trigger, left) {
+      st.pause = { trigger: trigger, start: Date.now(), dur: 900, ended: false, called: false };
+      st.alert = { time: '14:02', trigger: trigger, start: Date.now() - 180000 };
+      st.frozenLeft = left; st.breathIn = true;
+    }
+    applyI18n();
+    switch (name) {
+      case 'ob1': st.obStep = 1; show('s1', { noFocus: true }); break;
+      case 'ob2': st.obStep = 2; show('s1', { noFocus: true }); break;
+      case 'ob3': st.obStep = 3; S.consentSms = true; show('s1', { noFocus: true });
+        $('#fName').value = t('demo_name'); $('#fPhone').value = '+7 000 000 00 00'; $('#fCode').value = 'Barsik'; $('#fCode2').value = 'Barsik'; break;
+      case 'home': demo(); show('s2', { noFocus: true }); break;
+      case 'sc0': demo(); st.scenario = null; show('s3', { noFocus: true }); break;
+      case 'sc1': demo(); show('s3', { noFocus: true }); st.scenario = { kind: 'bank', step: 4 }; drawScenario('bank', 4); $('#screens').scrollTop = $('#screens').scrollHeight; break;
+      case 'sc2': demo(); show('s3', { noFocus: true }); st.scenario = { kind: 'known', step: 4 }; drawScenario('known', 4); break;
+      case 'p1': demo(); pauseAt('bank', 852); show('s4', { noFocus: true }); break;
+      case 'p2': demo(); pauseAt('bank', 735); show('s4', { noFocus: true });
+        $$('#pChecklist input').forEach(function (c, i) { c.checked = (i === 0 || i === 2 || i === 4); }); updateVerdict();
+        $('#screens').scrollTop = $('#pChecklist').offsetTop - 10; break;
+      case 'p3': demo(); pauseAt('bank', 735); show('s4', { noFocus: true }); $('#pCode').value = 'Barsiq'; $('#pExitMsg').textContent = t('p_exit_wrong');
+        $('#screens').scrollTop = $('#pCall').offsetTop - 10; break;
+      case 'r1': demo(); st.alert = { time: '14:02', trigger: 'bank', start: Date.now() - 180000 }; st.relView = 'sms'; show('s5', { noFocus: true }); break;
+      case 'r2': demo(); st.alert = { time: '14:02', trigger: 'bank', start: Date.now() - 180000 }; st.relView = 'status'; show('s5', { noFocus: true }); break;
+      case 'v1': demo(); st.lastDecision = { time: '14:02', kind: 'sms', trigger: true, reason: 'two_signals', ai: true }; S.consentAi = true; show('s6', { noFocus: true }); break;
+      case 'v2': demo(); show('s6', { noFocus: true }); $('#screens').scrollTop = $('#pvExport').offsetTop - 10; $('#exMsg').textContent = t('pv_saved', { file: 'qalqan60_open_data_2026-W47.json' }); $('#modal').hidden = false; break;
+      case 'v3': demo(); show('s6', { noFocus: true }); $('#screens').scrollTop = $('#pvExport').offsetTop - 10; $('#exMsg').textContent = t('pv_saved', { file: 'qalqan60_open_data_2026-W47.json' }); break;
+      default: show('s1', { noFocus: true });
+    }
+    fit();
+  }
+
+  /* ---------- start ---------- */
+  if (SHOT) { setupShot(SHOT); return; }
+  if (params.get('lang')) S.lang = params.get('lang');
+  applyI18n();
+  st.obStep = 1;
+  show(S.onboarded ? 's2' : 's1', { noFocus: true });
+  fit();
+  setInterval(function () { $('#sbTime').textContent = hhmm(new Date()); }, 10000);
+  $('#sbTime').textContent = hhmm(new Date());
+  log('Prototype loaded. Data is kept only in this browser (localStorage).');
+})();
+</script>
+</body>
+</html>

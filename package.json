@@ -1,0 +1,14 @@
+{
+  "name": "qalqan-60plus",
+  "version": "0.2.0",
+  "private": true,
+  "description": "Qalqan-60+: open-source anti-panic and delegated family shield against phone fraud for people aged 60+ (clickable prototype, open data, documentation).",
+  "license": "MIT",
+  "scripts": {
+    "lint:html": "html-validate src/index.html index.html",
+    "test": "npm run lint:html"
+  },
+  "devDependencies": {
+    "html-validate": "^9.0.0"
+  }
+}
